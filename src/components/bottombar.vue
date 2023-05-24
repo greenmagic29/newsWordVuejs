@@ -1,0 +1,47 @@
+<template>
+  
+
+<div class="bottombar">
+
+  <div style="display: flex; list-style-type: none; overflow-x: auto;">
+    <div style="padding: 1rem; min-width: 74px;">
+      <router-link to="/" class="bottom-bar-link">
+
+        Home
+        <span class="material-symbols-outlined">
+          home
+        </span>
+      </router-link>
+    </div>
+    <!-- <div>F2</div> -->
+    <div style="padding: 1rem; min-width: 74px;">
+      <router-link to="/progress" class="bottom-bar-link">Progress
+        <span class="material-symbols-outlined">
+          event_note
+        </span>
+      </router-link>
+    </div>
+
+    <div style="padding: 1rem; min-width: 74px;">
+      <router-link to="/settings" class="bottom-bar-link">
+        Settings
+        <span class="material-symbols-outlined">
+          settings
+        </span>
+      </router-link>
+    </div>
+
+    <div style="padding: 1rem; min-width: 74px;">
+      <router-link to="/about" class="bottom-bar-link">About
+        <span class="material-symbols-outlined">
+          help
+        </span>
+      </router-link>
+    </div>
+
+
+  </div>
+</div>
+</template>
+
+
