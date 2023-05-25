@@ -68,11 +68,14 @@ export default {
         const result = JSON.parse(await res.text());
         console.log("🚀 ~ file: home.js:61 ~ createParagraphFromNews ~ result", result)
         this.$emit('doc-edit', result)
-        
+        await this.toDocEdit(result);
       }
       catch(error) {
         console.log("🚀 ~ file: home.js:66 ~ createParagraphFromNews ~ error", error)
       }
+    },
+    async toDocEdit(item) {
+      this.$router.push(`/docEdit/${item.id}`)
     },
     togglePanel() {
       this.showPanel = !this.showPanel
@@ -92,7 +95,7 @@ export default {
 .top-news-container__header {
     margin: 0.5rem 0;
     font-size: 1rem;
-    color: #283618;
+    color: var(--color-heading);
 }
 
 .top-new-expand-panel {

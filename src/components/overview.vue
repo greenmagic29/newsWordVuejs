@@ -19,7 +19,7 @@
         </div>
       </div>
     </div>
-    <a class="home-add-btn" @click="createParagraph()">+</a>
+    <!-- <a class="home-add-btn" @click="createParagraph()">+</a> -->
   </div>
   </template>
 
@@ -147,3 +147,55 @@ export default {
 
 }
   </script>
+
+<style scoped>
+.top-news-container {
+    border-bottom: solid 1px rgba(242, 242, 242, 1);
+}
+
+
+.top-new-container__news {
+    margin: 0.5rem;
+}
+
+.top-news-container__header {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    color: var(--color-heading);
+}
+
+.home-container {
+    display: flex;
+    flex-direction: column;
+}
+.home-container__header {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    color: var(--color-heading);
+}
+.doc {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding:10px
+}
+
+.doc__desc {
+    display: flex; 
+    align-items: center;
+    
+}
+.doc__title {
+    width: 16rem;
+    white-space: pre-wrap;
+    text-align: center;
+    flex-grow: 1;
+    text-transform: capitalize;
+}
+.doc-date {
+    text-indent: 1.5rem;
+    font-size: 1rem;
+    text-align: center;
+}
+</style> 

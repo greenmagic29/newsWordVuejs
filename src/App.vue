@@ -1,6 +1,7 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
 import BottomBar from './components/bottombar.vue'
+import MobileRequestNotificationBanner from './components/mobilerequestNotificationBanner.vue';
 </script>
 
 <template>
@@ -22,11 +23,12 @@ import BottomBar from './components/bottombar.vue'
           arrow_back
         </span>
         <p class="hero-text">
-          <span class="nowrap">Welcome</span>
+          <span class="nowrap">News</span>
 
         </p>
 
       </header>
+      <BottomBar class="nav-header" />
       <RouterView class="index-content"/>
 
       <!-- <section class="index-content">
@@ -39,31 +41,29 @@ import BottomBar from './components/bottombar.vue'
 
       </section> -->
 
-      <section class="footer">
+      <!-- <section class="footer">
         <div class="wb-footer"> @ABC by tyic. Since 2000 - {{ new Date().getFullYear() }}</div>
-        <BottomBar class="nav-footer" />
         
-      </section>
-
+        
+      </section> -->
+      
     </div>
-  <section class="webpush-banner__section" id="webpush-banner__section">
-    <p class="webpush-banner__p">Want to receive reminder everyday? Allow notification in your browser.</p>
-    <footer class="webpush-banner__footer">
-      <a onclick="hideWebpuhsBanner()" >Cancel</a>
-      <a onclick="index_html_module.serviceWorker();hideWebpuhsBanner()">Confirm</a>
-    </footer>
-  </section>
+    <BottomBar class="nav-footer" />
+    <MobileRequestNotificationBanner />
+
 </main>
   
 </template>
 
 <style scoped>
+
 .main {
   display: flex;
   flex-direction: column;
+  min-height: calc(100vh - 2rem);
 }
 .hero {
-    padding: 0.5rem;
+    padding: 0.5rem 0;
     /* background-color: #dda15e; */
     max-height: 60px;
     display: flex;
@@ -76,41 +76,54 @@ import BottomBar from './components/bottombar.vue'
 
 }
 .hero-text {
+  color: var(--color-heading);
     flex-grow: 1;
-    text-align: center;
+    
     font-weight: 600;
     font-size: 1.5rem;
 }
 .index-content {
   flex-grow: 1;
 }
-.webpush-banner__section {
-  display: flex;
-  position: fixed;
-  bottom: 0;
-  background-color: antiquewhite;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  text-align: center;
-  /* height: 17%; */
-  left: 0;
-  /* scroll-behavior: auto; */
 
+.nav-footer {
+    display: flex;
+    justify-content: center;
+    position: sticky;
+    bottom: 0;
+    background-color: var(--color-background);
 }
-
-.webpush-banner__p {
-    padding: 1rem;
+.nav-header {
+  display: none;
 }
-
-.webpush-banner__footer {
-    align-self: end;
-    margin: 1rem;
-
-    margin-top: 0;
-}
-
 @media (min-width: 1024px) {
-
+  .nav-footer {
+    display: none;
+  }
+  .nav-header {
+    display: flex;
+    justify-content: center;
+  }
 }
 </style>
+
+<script>
+export default {
+  methods: {
+      goBack() {
+        
+        this.$router.back();
+      }
+    },
+    computed:{
+      showBack() {
+      
+        if(this.$router.currentRoute.value.fullPath === "/") {
+          
+          return false;
+        }
+        return true;
+      }
+    }
+}
+</script>

@@ -3,9 +3,10 @@
 #app {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
-
+  padding: 1rem 2rem;
+  padding-bottom: 0;
   font-weight: normal;
+  min-height: calc(100vh - 2rem);
 }
 
 a,
@@ -13,6 +14,10 @@ a,
   text-decoration: none;
   color: hsla(160, 100%, 37%, 1);
   transition: 0.4s;
+}
+a:focus,
+a:active {
+  background-color: hsla(160, 100%, 37%, 0.2);
 }
 
 @media (hover: hover) {
@@ -28,8 +33,14 @@ a,
   }
 
   #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+
+    max-width: 1024px;
+    width: 100%;
     padding: 0 2rem;
   }
+}
+
+strong {
+  font-weight: 600;
+  color: var(--color-heading);
 }
