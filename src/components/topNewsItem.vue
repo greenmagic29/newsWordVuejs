@@ -100,6 +100,7 @@ export default {
 <style>
 .top-new-container__news {
   margin: 0.5rem;
+  
 }
 
 .top-news-container__header {
@@ -112,6 +113,8 @@ export default {
   display: flex;
   flex-direction: row;
   gap: 2rem;
+  justify-content: center;
+  margin: 1rem;
 }
 
 .top-new-select-icon {

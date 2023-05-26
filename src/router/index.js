@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import DocEditView from "../views/DocEditView.vue";
+import LoginView from "../views/LoginView.vue";
 
 function ifAuthenticated(to, from, next) {
   console.log(
@@ -36,6 +37,10 @@ const router = createRouter({
       component: DocEditView,
       beforeEnter: ifAuthenticated,
     },
+    {
+      path: "/login",
+      component: LoginView
+    }
   ],
 });
 

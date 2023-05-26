@@ -36,6 +36,7 @@
 
 <script>
 import topNewsItem from "./topNewsItem.vue";
+import dayjs from 'dayjs';
 export default {
   components: { topNewsItem },
   data() {
@@ -151,10 +152,12 @@ export default {
 <style scoped>
 .top-news-container {
   border-bottom: solid 1px rgba(242, 242, 242, 1);
+  background-color: var(--color-background-soft);
 }
 
 .top-new-container__news {
   margin: 0.5rem;
+  
 }
 
 .top-news-container__header {
@@ -166,6 +169,7 @@ export default {
 .home-container {
   display: flex;
   flex-direction: column;
+  background-color: var(--color-background-soft);
 }
 .home-container__header {
   margin: 0.5rem 0;

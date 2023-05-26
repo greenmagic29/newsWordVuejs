@@ -15,7 +15,7 @@ import MobileRequestNotificationBanner from "./components/mobilerequestNotificat
     </div>
   </header> -->
 
-  <main>
+
     <!-- <button onclick="index_html_module.serviceWorker()">show notification</button> -->
     <div class="main">
       <header class="hero">
@@ -51,14 +51,14 @@ import MobileRequestNotificationBanner from "./components/mobilerequestNotificat
     </div>
     <BottomBar class="nav-footer" />
     <MobileRequestNotificationBanner />
-  </main>
+
 </template>
 
 <style scoped>
 .main {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 2rem);
+  flex-grow: 1;
 }
 .hero {
   padding: 0.5rem 0;
@@ -68,9 +68,9 @@ import MobileRequestNotificationBanner from "./components/mobilerequestNotificat
   align-items: center;
   /* border: 2px solid #fff; */
   /* border-radius: 1rem; */
-  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  /* box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); */
   /* margin: 0.5rem 1rem 0.5rem 1rem; */
-  border-bottom: solid 1px rgba(242, 242, 242, 1);
+  /* border-bottom: solid 1px rgba(242, 242, 242, 1); */
 }
 .hero-text {
   color: var(--color-heading);

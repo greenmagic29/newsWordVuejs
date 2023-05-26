@@ -37,7 +37,7 @@ export default {
   display: flex;
   position: fixed;
   bottom: 0;
-  background-color: antiquewhite;
+  background-color: var(--color-background-mute);
   flex-direction: column;
   align-items: center;
   width: 100%;
