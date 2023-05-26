@@ -71,15 +71,16 @@ export default {
 
         localStorage.setItem('login', ressBody.token);
         localStorage.setItem('user', JSON.stringify(ressBody.user));
-        window.location.href = "/"
+        this.$router('/')
       }
       catch (error) {
-        window.location.href = "/login.html";
+        console.log("🚀 ~ file: login.vue:77 ~ handleCredRes ~ error:", error)
+        // window.location.href = "/login.html";
       }
 
     }
   },
-  mounted: function (){
+  mounted(){
     google.accounts.id.initialize({
    client_id:
     '293155402509-b0pk4d2iqb3538d26j7j7evgfd37aojd.apps.googleusercontent.com',

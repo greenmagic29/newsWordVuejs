@@ -12,7 +12,7 @@ function ifAuthenticated(to, from, next) {
     next();
     return;
   }
-  window.location.href = "/login.html";
+  next({ name: 'login' })
 }
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +38,7 @@ const router = createRouter({
       beforeEnter: ifAuthenticated,
     },
     {
+      name: "login",
       path: "/login",
       component: LoginView
     }
