@@ -4,16 +4,18 @@
       type="text"
       @blur="updateTitle()"
       v-model="paragraph.title"
-      style="font-size: 1.5rem"
+      title="title"
+      placeholder="Enter a title"
+      class="doc-title"
     />
     <div
       id="toolbar"
-      style="position: sticky; top: 0; z-index: 1; background-color: whitesmoke"
+      class="quil-toolbar"
     >
       <!-- Add buttons as you would before -->
       <!-- <button class="ql-bold">Bold</button>
   <button class="ql-italic">italix</button>  -->
-      <button class="material-symbols-outlined" id="bookmarkWord-icon">
+      <button class="material-symbols-outlined bookmark-icon" id="bookmarkWord-icon" >
         book
       </button>
       <!-- But you can also add your own -->
@@ -235,3 +237,23 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.doc-title {
+  font-size: 1.5rem;
+      width: 100%;
+      background-color: var(--color-background-soft);
+      color: var(--color-heading);
+  }
+
+.quil-toolbar {
+  position: sticky; 
+  top: 0; 
+  z-index: 1; 
+  background-color: var(--color-background-soft);
+}
+
+.bookmark-icon {
+  color: var(--color-heading);
+}
+</style>

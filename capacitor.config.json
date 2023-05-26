@@ -4,5 +4,15 @@
   "webDir": "dist",
   "server": {
     "androidScheme": "https"
+  },
+  "plugins": {
+    "GoogleAuth": {
+      "scopes": ["profile", "email"],
+      "clientId": "293155402509-b0pk4d2iqb3538d26j7j7evgfd37aojd.apps.googleusercontent.com",
+      "forceCodeForRefreshToken": true
+    },
+    "CapacitorHttp": {
+      "enabled": true
+    }
   }
 }

@@ -164,6 +164,10 @@ export default {
   margin: 0.5rem 0;
   font-size: 1rem;
   color: var(--color-heading);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: var(--color-background-soft);
 }
 
 .home-container {
@@ -175,6 +179,10 @@ export default {
   margin: 0.5rem 0;
   font-size: 1rem;
   color: var(--color-heading);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: var(--color-background-soft);
 }
 .doc {
   display: flex;

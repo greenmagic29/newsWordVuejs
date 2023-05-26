@@ -7,7 +7,7 @@
       <p class="login__title">OneNews</p>
 
       <p class="login__intro">Continue with the following</p>
-      <div id="google_button" class="login__google-btn"></div>
+      <div id="google_button" class="login__google-btn" @click="logIn">button</div>
       <div id="prompt_parent_id"></div>
       <!-- <div
         id="g_id_onload"
@@ -36,20 +36,27 @@
 </template>
 <script>
 import jwt_decode from "jwt-decode";
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth'
 export default {
   methods:{
-    async  handleCredRes(res) {
+    async logIn() {
+      const response = await GoogleAuth.signIn();
+      console.log("🚀 ~ file: login.vue:44 ~ logIn ~ response:", JSON.stringify(response))
+      await this.handleCredRes(response)
+    },
+    async handleCredRes(res) {
       console.log("🚀 ~ file: login.html:11 ~ handleCredRes ~ res", res)
-      const responsePayload = jwt_decode(res.credential);
+      const responsePayload = jwt_decode(res.idToken);
       console.log("🚀 ~ file: login.html:12 ~ handleCredRes ~ responsePayload", responsePayload)
 
       const signupBody = {
         name: responsePayload.name,
         email: responsePayload.email,
         profilePic: responsePayload.picture,
-        googleToken: res.credential
+        googleToken: res.idToken
       };
-      
+      console.log(`abbbbb`, `${this.backendPath}/signup`);
+      console.log(`cccccccc`, JSON.stringify(signupBody));
       try {
         const ress = await fetch(`${this.backendPath}/signup`, {
           method: 'POST',
@@ -71,7 +78,7 @@ export default {
 
         localStorage.setItem('login', ressBody.token);
         localStorage.setItem('user', JSON.stringify(ressBody.user));
-        this.$router('/')
+        this.$router.push('/')
       }
       catch (error) {
         console.log("🚀 ~ file: login.vue:77 ~ handleCredRes ~ error:", error)
@@ -81,22 +88,23 @@ export default {
     }
   },
   mounted(){
-    google.accounts.id.initialize({
-   client_id:
-    '293155402509-b0pk4d2iqb3538d26j7j7evgfd37aojd.apps.googleusercontent.com',
-     callback: this.handleCredRes,
+    GoogleAuth.initialize();
+  //   google.accounts.id.initialize({
+  //  client_id:
+  //   '293155402509-b0pk4d2iqb3538d26j7j7evgfd37aojd.apps.googleusercontent.com',
+  //    callback: this.handleCredRes,
      
-  });
-  google.accounts.id.renderButton(
-    document.getElementById("google_button"),
-    {
-      theme: 'outline',
-      size: 'large',
-      click_listener: this.handleCredRes
-    }
+  // });
+  // google.accounts.id.renderButton(
+  //   document.getElementById("google_button"),
+  //   {
+  //     theme: 'outline',
+  //     size: 'large',
+  //     click_listener: this.handleCredRes
+  //   }
    
-    )
-  google.accounts.id.prompt()
+  //   )
+  // google.accounts.id.prompt()
   }
 }
 </script>

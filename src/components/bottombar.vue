@@ -42,7 +42,7 @@
   flex-direction: column-reverse;
   align-items: center;
   text-decoration: none;
-  padding: 0.2rem 1rem;
+  padding: 1px 28px;
 }
 @media (min-width: 1024px) {
   .bottom-bar-icon {
