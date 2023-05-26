@@ -1,5 +1,5 @@
 <script setup>
- import docEdit from '../components/docEdit.vue'
+import docEdit from "../components/docEdit.vue";
 </script>
 
 <template>

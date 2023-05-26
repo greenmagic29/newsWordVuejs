@@ -1,5 +1,5 @@
 <script setup>
-import overview from '../components/overview.vue'
+import overview from "../components/overview.vue";
 </script>
 
 <template>
