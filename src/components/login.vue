@@ -7,7 +7,18 @@
       <p class="login__title">OneNews</p>
 
       <p class="login__intro">Continue with the following</p>
-      <div id="google_button" class="login__google-btn" @click="logIn">button</div>
+      <div
+        class="mobile_login__google-btn"
+        @click="logInMobile"
+        v-if="isMobile"
+      >
+        <span>Login With Google</span>
+      </div>
+      <div
+        id="google_button"
+        class="login__google-btn"
+        v-if="!isMobile"
+      ></div>
       <div id="prompt_parent_id"></div>
       <!-- <div
         id="g_id_onload"
@@ -36,91 +47,99 @@
 </template>
 <script>
 import jwt_decode from "jwt-decode";
-import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth'
+import { GoogleAuth } from "@codetrix-studio/capacitor-google-auth";
+
 export default {
-  methods:{
-    async logIn() {
+
+  methods: {
+    async logInMobile() {
       const response = await GoogleAuth.signIn();
-      console.log("🚀 ~ file: login.vue:44 ~ logIn ~ response:", JSON.stringify(response))
-      await this.handleCredRes(response)
+      console.log(
+        "🚀 ~ file: login.vue:44 ~ logIn ~ response:",
+        JSON.stringify(response)
+      );
+      await this.handleCredResMobile(response);
     },
-    async handleCredRes(res) {
-      console.log("🚀 ~ file: login.html:11 ~ handleCredRes ~ res", res)
-      const responsePayload = jwt_decode(res.idToken);
-      console.log("🚀 ~ file: login.html:12 ~ handleCredRes ~ responsePayload", responsePayload)
+    async handleCredResMobile(res) {
+      await this.handleCredRes(res, "idToken");
+    },
+    async handleCredResWeb(res) {
+      await this.handleCredRes(res, "credential");
+    },
+    async handleCredRes(res, credentialKey) {
+      const responsePayload = jwt_decode(res[credentialKey]);
 
       const signupBody = {
         name: responsePayload.name,
         email: responsePayload.email,
         profilePic: responsePayload.picture,
-        googleToken: res.idToken
+        googleToken: res[credentialKey],
       };
-      console.log(`abbbbb`, `${this.backendPath}/signup`);
-      console.log(`cccccccc`, JSON.stringify(signupBody));
+
       try {
         const ress = await fetch(`${this.backendPath}/signup`, {
-          method: 'POST',
-          
-          mode: 'cors',
+          method: "POST",
+
+          mode: "cors",
           headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
             // 'Content-Type': 'application/x-www-form-urlencoded',
           },
-          body: JSON.stringify(signupBody)
+          body: JSON.stringify(signupBody),
         });
         if (ress.status !== 200) {
-
           throw Error("incorrect goolge");
         }
 
         const ressBody = JSON.parse(await ress.text());
-        console.log("🚀 ~ file: login.html:38 ~ handleCredRes ~ ressBody", ressBody)
+        console.log(
+          "🚀 ~ file: login.html:38 ~ handleCredRes ~ ressBody",
+          ressBody
+        );
 
-        localStorage.setItem('login', ressBody.token);
-        localStorage.setItem('user', JSON.stringify(ressBody.user));
-        this.$router.push('/')
+        localStorage.setItem("login", ressBody.token);
+        localStorage.setItem("user", JSON.stringify(ressBody.user));
+        this.$router.push("/");
+      } catch (error) {
+        console.log("🚀 ~ file: login.vue:77 ~ handleCredRes ~ error:", error);
       }
-      catch (error) {
-        console.log("🚀 ~ file: login.vue:77 ~ handleCredRes ~ error:", error)
-        // window.location.href = "/login.html";
-      }
-
+    },
+  },
+  mounted() {
+    if (this.isMobile) {
+      GoogleAuth.initialize();
+    } else {
+      google.accounts.id.initialize({
+        client_id:
+          "293155402509-b0pk4d2iqb3538d26j7j7evgfd37aojd.apps.googleusercontent.com",
+        callback: this.handleCredResWeb,
+      });
+      google.accounts.id.renderButton(
+        document.getElementById("google_button"),
+        {
+          theme: "outline",
+          size: "large",
+          click_listener: this.handleCredResWeb,
+        }
+      );
+      google.accounts.id.prompt();
     }
   },
-  mounted(){
-    GoogleAuth.initialize();
-  //   google.accounts.id.initialize({
-  //  client_id:
-  //   '293155402509-b0pk4d2iqb3538d26j7j7evgfd37aojd.apps.googleusercontent.com',
-  //    callback: this.handleCredRes,
-     
-  // });
-  // google.accounts.id.renderButton(
-  //   document.getElementById("google_button"),
-  //   {
-  //     theme: 'outline',
-  //     size: 'large',
-  //     click_listener: this.handleCredRes
-  //   }
-   
-  //   )
-  // google.accounts.id.prompt()
-  }
-}
+};
 </script>
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Fugaz+One&family=Nunito&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Fugaz+One&family=Nunito&display=swap");
 *,
 *::after,
 *::before {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 img {
-	display: block;
-	max-width: 100%;
-	height: auto;
+  display: block;
+  max-width: 100%;
+  height: auto;
 }
 
 :root {
@@ -129,10 +148,8 @@ img {
 }
 
 .login__main {
-
   display: flex;
   justify-content: center;
-  
 }
 
 .login__section {
@@ -151,7 +168,7 @@ img {
 }
 .login__title {
   font-size: 3rem;
-  text-align:center;
+  text-align: center;
 }
 .login__icon {
   text-align: center;
@@ -166,11 +183,19 @@ img {
 .login__google-btn {
   margin: 0 auto;
 }
+.mobile_login__google-btn {
+  border: 1px;
+    border-radius: 5px;
+    border-color: white;
+    border-style: solid;
+    text-align: center;
+    padding: 0.5rem 2rem;
+    align-self: center;
 
+}
 .login__footer {
   margin: 1rem 0;
-/*   min-height: calc(100vh - 30em); */
+  /*   min-height: calc(100vh - 30em); */
   text-align: center;
 }
 </style>
-

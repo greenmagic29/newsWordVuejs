@@ -21,21 +21,23 @@
       <!-- But you can also add your own -->
       <!-- <button id="custom-button"></button> -->
     </div>
-    <div id="editor"></div>
     <div class="doc-edit-bookmark-icon" @click="openBookmarkDialog()">
       <span class="material-symbols-outlined" style="margin-top: 0.3rem">
         book
       </span>
     </div>
-    <bookmark-dialog
+    <div id="editor"></div>
+
+    <BookmarkDialog
       v-if="bookmarkDialog.open"
       :paragraphId="bookmarkDialog.data.paragraphId"
       @close="bookmarkDialog.open = false"
-    ></bookmark-dialog>
+    ></BookmarkDialog>
   </div>
 </template>
 <script>
 import Quill from "quill";
+import BookmarkDialog from './bookmarkDialog.vue'
 function getSelection(quill) {
   const range = quill.getSelection();
   console.log("🚀 ~ file: docEdit.js:5 ~ getSelection ~ range", range);
@@ -86,6 +88,7 @@ function customBoldHandler(paragraphId, backendPath) {
   };
 }
 export default {
+  components: {BookmarkDialog},
   data() {
     return {
       count: 0,
@@ -255,5 +258,25 @@ export default {
 
 .bookmark-icon {
   color: var(--color-heading);
+}
+
+.doc-edit-bookmark-icon {
+    position: fixed;
+    bottom: 82px;
+    right: 2rem;
+
+    display: block;
+    background-color: var(--color-background-soft);
+    color: var(--color-heading);
+    padding: 0.65rem 1rem;
+
+    border-radius: 50%;
+    text-align: center;
+    z-index: 1;
+}
+@media (min-width: 1024px) {
+  .doc-edit-bookmark-icon {
+    bottom: 0;
+  }
 }
 </style>
