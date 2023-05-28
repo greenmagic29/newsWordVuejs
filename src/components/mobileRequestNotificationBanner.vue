@@ -9,12 +9,13 @@
     </p>
     <footer class="webpush-banner__footer">
       <a @click="hideWebpuhsBanner">Cancel</a>
-      <a @click="hideWebpuhsBanner">Confirm</a>
+      <a @click="enableNotification">Confirm</a>
     </footer>
   </section>
 </template>
 
 <script>
+import { LocalNotifications } from '@capacitor/local-notifications'
 export default {
   data() {
     return {
@@ -26,7 +27,29 @@ export default {
     hideWebpuhsBanner() {
       this.show = false;
     },
-    enableNotification() {
+    async enableNotification() {
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            title: "Reminder of OneNews",
+            body: "Open the OneNews App for news",
+            largeBody: "Open the OneNews App for news",
+            summaryText: "Summary",
+            id: 0,
+            schedule:{
+              allowWhileIdle: true,
+              on: {
+                //hour: 10
+                minute: 8
+              },
+              
+            }
+
+          }
+        ]
+      }
+
+      )
       this.show = false;
     },
   },

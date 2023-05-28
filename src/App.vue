@@ -50,7 +50,7 @@ import MobileRequestNotificationBanner from "./components/mobilerequestNotificat
       </section> -->
     </div>
     <BottomBar class="nav-footer" />
-    <MobileRequestNotificationBanner v-show="isMobile"/>
+    <MobileRequestNotificationBanner v-show=" isEnabledNotif && notCreatedNotif"/>
 
 </template>
 
@@ -105,11 +105,28 @@ import MobileRequestNotificationBanner from "./components/mobilerequestNotificat
 </style>
 
 <script>
+import {LocalNotifications} from '@capacitor/local-notifications'
 export default {
+   data() {
+    return {
+      isEnabledNotif: true,
+      notCreatedNotif: true
+    }
+  },
   methods: {
     goBack() {
       this.$router.back();
     },
+  },
+  async mounted() {
+    const permission = (await LocalNotifications.checkPermissions()).display;
+    if(['prompt', 'prompt-with-rationale'].includes(permission)) {
+      await LocalNotifications.requestPermissions();
+    }
+    
+    const notifications = (await LocalNotifications.getPending()).notifications
+    console.log("🚀 ~ file: App.vue:124 ~ mounted ~ await LocalNotifications.getPending():", notifications.length)
+    this.notCreatedNotif = notifications.length === 0
   },
   computed: {
     showBack() {
@@ -118,6 +135,7 @@ export default {
       }
       return true;
     },
+
   },
 };
 </script>
