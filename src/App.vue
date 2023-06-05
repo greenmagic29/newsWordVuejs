@@ -50,7 +50,7 @@ import MobileRequestNotificationBanner from "./components/mobilerequestNotificat
       </section> -->
     </div>
     <BottomBar class="nav-footer" />
-    <MobileRequestNotificationBanner v-show=" isEnabledNotif && notCreatedNotif"/>
+    <MobileRequestNotificationBanner v-show=" isEnabledNotif && notCreatedNotif " />
 
 </template>
 
@@ -119,6 +119,7 @@ export default {
     },
   },
   async mounted() {
+    console.log("🚀 ~ file: App.vue:140 ~ isInLoginPage ~ this.$router.currentRoute.value.fullPath:", this.$router.currentRoute.value.fullPath)
     const permission = (await LocalNotifications.checkPermissions()).display;
     if(['prompt', 'prompt-with-rationale'].includes(permission)) {
       await LocalNotifications.requestPermissions();
@@ -130,11 +131,18 @@ export default {
   },
   computed: {
     showBack() {
-      if (this.$router.currentRoute.value.fullPath === "/") {
+      if (["/", "/login"].includes(this.$router.currentRoute.value.fullPath)) {
         return false;
       }
       return true;
     },
+    isInLoginPage() {
+      if(this.$router.currentRoute.value.fullPath === "/login") {
+        
+        return true
+      }
+      return false
+    }
 
   },
 };

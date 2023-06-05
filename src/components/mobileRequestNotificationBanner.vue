@@ -16,6 +16,7 @@
 
 <script>
 import { LocalNotifications } from '@capacitor/local-notifications'
+import {createConnection, openDB, initTable, insertData, queryData} from "../utils/sqlitedb"
 export default {
   data() {
     return {
@@ -28,13 +29,21 @@ export default {
       this.show = false;
     },
     async enableNotification() {
+      await createConnection();
+      await openDB()
+      const words = await queryData();
+      const wordString = words.map(word => {
+        return `${word.word}`
+      }).join(", ")
+      const wordDefString = words.map(word => {
+        return `${word.word}: ${word.definition}`
+      }).join(", ")
       await LocalNotifications.schedule({
         notifications: [
           {
             title: "Reminder of OneNews",
-            body: "Open the OneNews App for news",
-            largeBody: "Open the OneNews App for news",
-            summaryText: "Summary",
+            body: `OneNews: ${wordString}`,
+            largeBody: `${wordDefString}`,
             id: 0,
             schedule:{
               allowWhileIdle: true,
