@@ -15,8 +15,8 @@
 </template>
 
 <script>
-import { LocalNotifications } from '@capacitor/local-notifications'
-import {createConnection, openDB, initTable, insertData, queryData} from "../utils/sqlitedb"
+import { LocalNotifications } from "@capacitor/local-notifications";
+import { createConnection, openDB, queryWordByLimit, queryWordCount, insertWord } from "../utils/sqlitedb";
 export default {
   data() {
     return {
@@ -28,37 +28,58 @@ export default {
     hideWebpuhsBanner() {
       this.show = false;
     },
-    async enableNotification() {
-      await createConnection();
-      await openDB()
-      const words = await queryData();
-      const wordString = words.map(word => {
-        return `${word.word}`
-      }).join(", ")
-      const wordDefString = words.map(word => {
-        return `${word.word}: ${word.definition}`
-      }).join(", ")
-      await LocalNotifications.schedule({
-        notifications: [
-          {
-            title: "Reminder of OneNews",
-            body: `OneNews: ${wordString}`,
-            largeBody: `${wordDefString}`,
-            id: 0,
-            schedule:{
-              allowWhileIdle: true,
-              on: {
-                //hour: 10
-                minute: 8
-              },
-              
-            }
 
-          }
-        ]
+    async getLatestWords() {
+      try {
+        const res = await fetch(`${this.backendPath}/bookmark/latest`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            // 'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: localStorage.getItem("login"),
+          },
+        });
+        const resBody = JSON.parse(await res.text());
+        return resBody;
+      } catch (error) {
+        console.log("🚀 ~ file: mobileRequestNotificationBanner.vue:41 ~ getLatestWords ~ error:", error)
+        
+      }
+    },
+    async enableNotification() {
+      const backendWords = await this.getLatestWords();
+      await createConnection();
+      await openDB();
+      for (let bdWord of backendWords.row) {
+        await insertWord(bdWord.word, bdWord.def.definition)
+      }
+      
+
+      const words = await queryWordByLimit();
+      for (let j = 0; j < 12; j++) {
+        const wordString = words[j].word;
+        const wordDefString = words[j].definition;
+        const hour = j + 9;
+        await LocalNotifications.schedule({
+          notifications: [
+            {
+              title: "Reminder of OneNews",
+              body: `OneNews: ${wordString}`,
+              largeBody: `${wordDefString}`,
+              id: 0,
+              schedule: {
+                allowWhileIdle: true,
+                on: {
+                  hour: hour,
+                  //minute: 8
+                },
+              },
+            },
+          ],
+        });
       }
 
-      )
+
       this.show = false;
     },
   },
@@ -76,7 +97,7 @@ export default {
   text-align: center;
   /* height: 17%; */
   left: 0;
-z-index: 3;
+  z-index: 3;
   /* scroll-behavior: auto; */
 }
 

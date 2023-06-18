@@ -50,7 +50,7 @@ import MobileRequestNotificationBanner from "./components/mobilerequestNotificat
       </section> -->
     </div>
     <BottomBar class="nav-footer" />
-    <MobileRequestNotificationBanner v-show=" isEnabledNotif && notCreatedNotif " />
+    <MobileRequestNotificationBanner v-show=" isEnabledNotif && notCreatedNotif && !isInLoginPage" />
 
 </template>
 

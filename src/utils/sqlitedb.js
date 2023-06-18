@@ -50,24 +50,56 @@ export async function initTable() {
   }
 }
 
-export async function insertData() {
+export async function insertWord(word, definition) {
   if(db) {
     try {
       const sql = `INSERT INTO dictionary (word, definition) values (?, ?)`;
-      const values = ['hello', 'a word of greeting'];
+      const values = [word, definition];
       await db.run(sql, values);
     } catch (error) {
-      console.log("🚀 ~ file: sqlitedb.js:46 ~ insertData ~ error:", error)
+      console.log("🚀 ~ file: sqlitedb.js:46 ~ insertWord ~ error:", error)
       
     }
   }
 }
 
-export async function queryData () {
+export async function queryWordCount() {
+  if(db) {
+    try {
+      const countQuery = await db.query(`select count(*) as count from dictionary`, []);
+      const count = countQuery.values[0].count
+      return parseInt(count)
+    } catch (error) {
+      console.log("🚀 ~ file: sqlitedb.js:73 ~ queryWordCount ~ error:", error)
+      return 0;
+    }
+  }
+}
+
+
+export async function queryWordByLimit() {
+  if(db) {
+    try {
+      //
+
+
+      const sql =  `Select word, definition from dictionary limit 12`;
+      const values = [];
+      const result = await db.query(sql, values)
+      console.log("🚀 ~ file: sqlitedb.js:77 ~ queryData ~ result.values:", JSON.stringify(result.values))
+      return result.values;
+    } catch (error) {
+      console.log("🚀 ~ file: sqlitedb.js:59 ~ queryData ~ error:", error)
+      
+    }
+      
+  }
+}
+export async function queryWordByWord(word) {
   if(db) {
     try {
       const sql =  `Select word, definition from dictionary where word like ?`;
-      const values = ['hello'];
+      const values = [word];
       const result = await db.query(sql, values)
       console.log("🚀 ~ file: sqlitedb.js:77 ~ queryData ~ result.values:", JSON.stringify(result.values))
       return result.values;

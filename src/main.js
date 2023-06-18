@@ -6,7 +6,7 @@ import { createPinia } from "pinia";
 import App from "./App.vue";
 import router from "./router";
 import { Capacitor } from "@capacitor/core";
-import {createConnection, openDB, initTable, insertData, queryData} from "./utils/sqlitedb"
+import {createConnection, openDB, initTable} from "./utils/sqlitedb"
 
 
 const app = createApp(App);
@@ -26,9 +26,11 @@ window.addEventListener('DOMContentLoaded', async () => {
   try {
       console.log(`platform: ${platform}`);
 
-      if(platform === "web") {
-        //no need for web
-        return;
+      if(platform === "android") {
+        await createConnection();
+        await openDB()
+        await initTable();
+
         // // Create the 'jeep-sqlite' Stencil component
         // const jeepSqliteEl = document.createElement('jeep-sqlite');
         // document.body.appendChild(jeepSqliteEl);
@@ -42,11 +44,11 @@ window.addEventListener('DOMContentLoaded', async () => {
       // here you can initialize some database schema if required
 
       // example: database creation with standard SQLite statements
-      await createConnection();
-      await openDB()
-      await initTable();
-      await insertData();
-      await queryData();
+      // await createConnection();
+      // await openDB()
+      // await initTable();
+      // await insertData();
+      // await queryData();
       
       //await sqlite.closeConnection("db_vite",false);
       app.mount("#app");
