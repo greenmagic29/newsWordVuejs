@@ -1,5 +1,5 @@
 import { SQLiteDBConnection, CapacitorSQLite,SQLiteConnection } from "@capacitor-community/sqlite";
-
+import { LocalNotifications } from "@capacitor/local-notifications";
 let db = null;
 
 export async function createConnection() {
@@ -40,12 +40,50 @@ export async function initTable() {
       const sql =  `CREATE TABLE IF NOT EXISTS dictionary(
         id integer primary key,
         word text not null unique,
-        definition text not null
+        definition text not null,
+        modified_date timestamp default CURRENT_TIMESTAMP 
       )`;
       await db.execute(sql);
+
+      const sqlCache = `Create table if not exists cachedTable(
+        id integer primary key,
+        name text,
+        last_update_date timestamp default current_timestamp
+      )`;
+      await db.execute(sqlCache);
+
+      const createWordCacheRecordSql = `INSERT or ignore into cachedTable (name) values ('dictionary')`;
+      await db.execute(createWordCacheRecordSql);
     } catch (error) {
       console.log("🚀 ~ file: sqlitedb.js:30 ~ initTable ~ error:", error)
       
+    }
+  }
+}
+export async function getCache(type) {
+  if(db) {
+    try {
+      const sql =  `Select * from cachedTable where name = ?`;
+      const values = [type];
+      const result = await db.query(sql, values)
+      //console.log("🚀 ~ file: sqlitedb.js:77 ~ queryData ~ result.values:", JSON.stringify(result.values))
+      return result.values;
+    } catch (error) {
+      console.log("🚀 ~ file: sqlitedb.js:68 ~ getCache ~ error:", error)
+      
+    }
+  }
+}
+
+export async function updateWordCache() {
+  if(db) {
+    try {
+      const sql = `update cachedTable set last_update_date = current_timestamp where name = 'dictionary'`;
+      await db.execute(sql);
+    }
+    catch(error) {
+    console.log("🚀 ~ file: sqlitedb.js:71 ~ updateWordCache ~ error:", error)
+
     }
   }
 }
@@ -110,3 +148,68 @@ export async function queryWordByWord(word) {
       
   }
 }
+
+export async function getLatestWords() {
+  try {
+    const res = await fetch(`${import.meta.env.VITE_backendPath}/bookmark/latest`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: localStorage.getItem("login"),
+      },
+    });
+    const resBody = JSON.parse(await res.text());
+    return resBody;
+  } catch (error) {
+    console.log("🚀 ~ file: mobileRequestNotificationBanner.vue:41 ~ getLatestWords ~ error:", error)
+    
+  }
+}
+
+export async function createNotifications() {
+  const backendWords = await getLatestWords();
+      await createConnection();
+      await openDB();
+      for (let bdWord of backendWords.row) {
+        await insertWord(bdWord.word, bdWord.def.definition)
+      }
+      
+      const words = await queryWordByLimit();
+      for (let j = 0; j < 12; j++) {
+        const wordString = words[j].word;
+        const wordDefString = words[j].definition;
+        const hour = j + 9;
+        await LocalNotifications.schedule({
+          notifications: [
+            {
+              title: `OneNews: ${wordString}`,
+              body: `OneNews: ${wordString}`,
+              largeBody: `${wordDefString}`,
+              id: j,
+              schedule: {
+                allowWhileIdle: true,
+                on: {
+                  hour: hour,
+                  minute: 0
+                  //minute: 8
+                },
+              },
+            },
+          ],
+        });
+      }
+
+      await updateWordCache()
+}
+
+// export async function truncateWord() {
+//   if(db) {
+//     try {
+      
+//     } catch (error) {
+//       console.log("🚀 ~ file: sqlitedb.js:119 ~ truncateWord ~ error:", error)
+      
+//     }
+//   }
+// }

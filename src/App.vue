@@ -106,6 +106,8 @@ import MobileRequestNotificationBanner from "./components/mobilerequestNotificat
 
 <script>
 import {LocalNotifications} from '@capacitor/local-notifications'
+import { createNotifications, getCache } from "./utils/sqlitedb";
+import dayjs from 'dayjs'
 export default {
    data() {
     return {
@@ -128,6 +130,14 @@ export default {
     const notifications = (await LocalNotifications.getPending()).notifications
     console.log("🚀 ~ file: App.vue:124 ~ mounted ~ await LocalNotifications.getPending():", notifications.length)
     this.notCreatedNotif = notifications.length === 0
+
+    //update the latest bookmark to notification once a day
+    const lastDateString = (await getCache('dictionary'))['last_update_date'];
+    const lastDate = dayjs(lastDateString)
+    const now = dayjs();
+    if(!this.notCreatedNotif && now.isAfter(lastDate.add(1, 'day'))) {
+     await createNotifications();
+    }
   },
   computed: {
     showBack() {

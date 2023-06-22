@@ -16,7 +16,7 @@
 
 <script>
 import { LocalNotifications } from "@capacitor/local-notifications";
-import { createConnection, openDB, queryWordByLimit, queryWordCount, insertWord } from "../utils/sqlitedb";
+import { createNotifications } from "../utils/sqlitedb";
 export default {
   data() {
     return {
@@ -29,57 +29,8 @@ export default {
       this.show = false;
     },
 
-    async getLatestWords() {
-      try {
-        const res = await fetch(`${this.backendPath}/bookmark/latest`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            // 'Content-Type': 'application/x-www-form-urlencoded',
-            Authorization: localStorage.getItem("login"),
-          },
-        });
-        const resBody = JSON.parse(await res.text());
-        return resBody;
-      } catch (error) {
-        console.log("🚀 ~ file: mobileRequestNotificationBanner.vue:41 ~ getLatestWords ~ error:", error)
-        
-      }
-    },
     async enableNotification() {
-      const backendWords = await this.getLatestWords();
-      await createConnection();
-      await openDB();
-      for (let bdWord of backendWords.row) {
-        await insertWord(bdWord.word, bdWord.def.definition)
-      }
-      
-
-      const words = await queryWordByLimit();
-      for (let j = 0; j < 12; j++) {
-        const wordString = words[j].word;
-        const wordDefString = words[j].definition;
-        const hour = j + 9;
-        await LocalNotifications.schedule({
-          notifications: [
-            {
-              title: "Reminder of OneNews",
-              body: `OneNews: ${wordString}`,
-              largeBody: `${wordDefString}`,
-              id: 0,
-              schedule: {
-                allowWhileIdle: true,
-                on: {
-                  hour: hour,
-                  //minute: 8
-                },
-              },
-            },
-          ],
-        });
-      }
-
-
+      await createNotifications()
       this.show = false;
     },
   },
