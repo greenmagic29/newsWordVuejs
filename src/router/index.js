@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import DocEditView from "../views/DocEditView.vue";
 import LoginView from "../views/LoginView.vue";
+import ExamItem from "../components/examItem.vue";
+import TestView from "../views/TestView.vue";
 
 function ifAuthenticated(to, from, next) {
   console.log(
@@ -41,6 +43,17 @@ const router = createRouter({
       name: "login",
       path: "/login",
       component: LoginView
+    },
+    {
+      name: "exam",
+      path: "/exam/:word/:def",
+      component: ExamItem,
+      props: true
+    },
+    {
+      name: "test",
+      path: "/test",
+      component: TestView
     }
   ],
 });

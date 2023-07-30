@@ -50,7 +50,7 @@ import MobileRequestNotificationBanner from "./components/mobilerequestNotificat
       </section> -->
     </div>
     <BottomBar class="nav-footer" />
-    <MobileRequestNotificationBanner v-show=" isEnabledNotif && notCreatedNotif && !isInLoginPage" />
+    <MobileRequestNotificationBanner v-show=" isMobile && isEnabledNotif && notCreatedNotif && !isInLoginPage" />
 
 </template>
 
@@ -130,13 +130,24 @@ export default {
     const notifications = (await LocalNotifications.getPending()).notifications
     console.log("🚀 ~ file: App.vue:124 ~ mounted ~ await LocalNotifications.getPending():", notifications.length)
     this.notCreatedNotif = notifications.length === 0
-
-    //update the latest bookmark to notification once a day
-    const lastDateString = (await getCache('dictionary'))['last_update_date'];
-    const lastDate = dayjs(lastDateString)
-    const now = dayjs();
-    if(!this.notCreatedNotif && now.isAfter(lastDate.add(1, 'day'))) {
-     await createNotifications();
+    if(this.isMobile) {
+      //update the latest bookmark to notification once a day
+      const lastDateString = (await getCache('dictionary'))[0]['last_update_date'];
+      const lastDate = dayjs(lastDateString)
+      console.log("🚀 ~ file: App.vue:137 ~ mounted ~ lastDate:", lastDate)
+      const now = dayjs();
+      if(!this.notCreatedNotif && now.isAfter(lastDate.add(1, 'day'))) {
+        console.log(`App.vue:140 ~ Refreshing notification....`)
+      await createNotifications();
+      }
+      const tmpRouter = this.$router;
+      LocalNotifications.addListener('localNotificationActionPerformed', (payload) => {
+        console.log("🚀 ~ file: App.vue:149 ~ LocalNotifications.addListener ~ localNotificationActionPerformed: running")
+          const extra = payload.notification.extra;
+          console.log("🚀 ~ file: App.vue:147 ~ LocalNotifications.addListener ~ extra:", JSON.stringify(extra))
+          // use route to redirect
+          tmpRouter.push({ name: extra.route, params: { word: extra.word.text, def: extra.word.def } })
+      });
     }
   },
   computed: {

@@ -47,7 +47,7 @@ export async function initTable() {
 
       const sqlCache = `Create table if not exists cachedTable(
         id integer primary key,
-        name text,
+        name text unique,
         last_update_date timestamp default current_timestamp
       )`;
       await db.execute(sqlCache);
@@ -121,7 +121,7 @@ export async function queryWordByLimit() {
       //
 
 
-      const sql =  `Select word, definition from dictionary limit 12`;
+      const sql =  `Select word, definition from dictionary order by modified_date desc limit 12`;
       const values = [];
       const result = await db.query(sql, values)
       console.log("🚀 ~ file: sqlitedb.js:77 ~ queryData ~ result.values:", JSON.stringify(result.values))
@@ -149,6 +149,25 @@ export async function queryWordByWord(word) {
   }
 }
 
+export async function queryExceptWord(word) {
+  if(db) {
+    try {
+      const sql = `select word, definition from dictionary where word <> ? limit 4`;
+      const values = [word];
+      const result = await db.query(sql, values);
+      return result.values;
+    } catch (error) {
+      console.log("🚀 ~ file: sqlitedb.js:157 ~ queryExceptWord ~ error:", error)
+      
+    }
+  }
+  let testing = [];
+  for(let i = 0; i < 5; ++i) {
+    testing.push({ word: "testing", definition: "testingDefinitionntestingDefinitiontesting" })
+  }
+  return testing;
+}
+
 export async function getLatestWords() {
   try {
     const res = await fetch(`${import.meta.env.VITE_backendPath}/bookmark/latest`, {
@@ -166,7 +185,31 @@ export async function getLatestWords() {
     
   }
 }
+export async function createTestNotification(){
+  await LocalNotifications.schedule({
+    notifications: [
+      {
+        title: `OneNews: pouring`,
+        body: `OneNews: pouring`,
+        largeBody: `pouring defsss`,
+        id: 999,
+        extra: {
+          route: `exam`,
+          word: {
+            text: "pouring",
+            def: "pouring defsss"
+          }
+        },
+        schedule: {
+          every: "minute",
+          allowWhileIdle: true,
 
+        },
+      },
+    ],
+  });
+
+}
 export async function createNotifications() {
   const backendWords = await getLatestWords();
       await createConnection();
@@ -187,6 +230,13 @@ export async function createNotifications() {
               body: `OneNews: ${wordString}`,
               largeBody: `${wordDefString}`,
               id: j,
+              extra: {
+                route: `exam`,
+                word: {
+                  text: wordString,
+                  def: wordDefString
+                }
+              },
               schedule: {
                 allowWhileIdle: true,
                 on: {
@@ -202,14 +252,14 @@ export async function createNotifications() {
 
       await updateWordCache()
 }
-
-// export async function truncateWord() {
-//   if(db) {
-//     try {
+//clear the db if there are too many
+export async function truncateCacheWord() {
+  if(db) {
+    try {
+      const sql = `delete from dictionary`;
+    } catch (error) {
+      console.log("🚀 ~ file: sqlitedb.js:119 ~ truncateCacheWord ~ error:", error)
       
-//     } catch (error) {
-//       console.log("🚀 ~ file: sqlitedb.js:119 ~ truncateWord ~ error:", error)
-      
-//     }
-//   }
-// }
+    }
+  }
+}

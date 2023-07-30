@@ -242,6 +242,9 @@ export default {
 </script>
 
 <style scoped>
+p {
+  font-size: 18px;
+}
 .doc-title {
   font-size: 1.5rem;
       width: 100%;

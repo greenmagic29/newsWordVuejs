@@ -1,5 +1,6 @@
 <template>
   <div>
+    <button @click="createTestNotification()">TESTING_NOTIFICATION</button>
     <div class="top-news-container">
       <header class="top-news-container__header">Top News</header>
       <topNewsItem
@@ -37,6 +38,7 @@
 <script>
 import topNewsItem from "./topNewsItem.vue";
 import dayjs from 'dayjs';
+import {createTestNotification} from "../utils/sqlitedb"
 export default {
   components: { topNewsItem },
   data() {
@@ -48,6 +50,10 @@ export default {
     };
   },
   methods: {
+    async createTestNotification() {
+      console.log("🚀 ~ file: overview.vue:54 ~ createTestNotification ~ createTestNotification: run");
+      await createTestNotification()
+    },
     async getParagraphs() {
       console.log(
         "🚀 ~ file: home.js:47 ~ getParagraphs ~ getParagraphs starts"
