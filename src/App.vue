@@ -31,7 +31,7 @@ import MobileRequestNotificationBanner from "./components/mobilerequestNotificat
         </p>
       </header>
       <BottomBar class="nav-header" />
-      <RouterView class="index-content" />
+      <RouterView :key="$route.fullPath" class="index-content" />
 
       <!-- <section class="index-content">
         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam labore asperiores iusto nostrum minus
@@ -128,9 +128,17 @@ export default {
     }
     
     const notifications = (await LocalNotifications.getPending()).notifications
-    console.log("🚀 ~ file: App.vue:124 ~ mounted ~ await LocalNotifications.getPending():", notifications.length)
+    console.log("🚀 ~ file: App.vue:124 ~ mounted ~ await LocalNotifications.getPending():", JSON.stringify(notifications))
     this.notCreatedNotif = notifications.length === 0
     if(this.isMobile) {
+      const tmpRouter = this.$router;
+      LocalNotifications.addListener('localNotificationActionPerformed', (payload) => {
+        console.log("🚀 ~ file: App.vue:149 ~ LocalNotifications.addListener ~ localNotificationActionPerformed: running")
+          const extra = payload.notification.extra;
+          console.log("🚀 ~ file: App.vue:147 ~ LocalNotifications.addListener ~ extra:", JSON.stringify(extra))
+          // use route to redirect
+          tmpRouter.push({ name: extra.route, params: { word: extra.word.text, def: extra.word.def } })
+      });
       //update the latest bookmark to notification once a day
       const lastDateString = (await getCache('dictionary'))[0]['last_update_date'];
       const lastDate = dayjs(lastDateString)
@@ -140,14 +148,7 @@ export default {
         console.log(`App.vue:140 ~ Refreshing notification....`)
       await createNotifications();
       }
-      const tmpRouter = this.$router;
-      LocalNotifications.addListener('localNotificationActionPerformed', (payload) => {
-        console.log("🚀 ~ file: App.vue:149 ~ LocalNotifications.addListener ~ localNotificationActionPerformed: running")
-          const extra = payload.notification.extra;
-          console.log("🚀 ~ file: App.vue:147 ~ LocalNotifications.addListener ~ extra:", JSON.stringify(extra))
-          // use route to redirect
-          tmpRouter.push({ name: extra.route, params: { word: extra.word.text, def: extra.word.def } })
-      });
+
     }
   },
   computed: {

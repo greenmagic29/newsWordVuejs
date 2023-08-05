@@ -211,6 +211,7 @@ export async function createTestNotification(){
 
 }
 export async function createNotifications() {
+  try {
   const backendWords = await getLatestWords();
       await createConnection();
       await openDB();
@@ -251,6 +252,11 @@ export async function createNotifications() {
       }
 
       await updateWordCache()
+    }
+    catch(error) {
+      console.log("🚀 ~ file: sqlitedb.js:257 ~ createNotifications ~ error:", error)
+      
+    }
 }
 //clear the db if there are too many
 export async function truncateCacheWord() {

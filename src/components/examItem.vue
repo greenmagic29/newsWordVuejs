@@ -39,11 +39,19 @@ export default {
     }
   },
   async mounted() {
+    console.log("🚀 ~ file: examItem.vue:42 ~ mounted ~ mounted:")
     const others = await this.getOtherChoices();
     const {ansPosition, questions} = await this.createQuestion(this.word, others, 5);
     this.ansPosition = ansPosition;
     this.questions = questions;
   },
+  // async activated() {
+  //   console.log("🚀 ~ file: examItem.vue:48 ~ activated ~ activated:")
+  //   const others = await this.getOtherChoices();
+  //   const {ansPosition, questions} = await this.createQuestion(this.word, others, 5);
+  //   this.ansPosition = ansPosition;
+  //   this.questions = questions;
+  // },
   methods: {
     clearSubmittedMsg() {
       this.submittedMsg = "";
