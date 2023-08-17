@@ -92,7 +92,7 @@ export default {
   display: flex;
   position: sticky;
   top: 0;
-
+  background-color: var(--color-background-soft);
 }
 .bookmark-dialog__word {
   flex-grow: 1;

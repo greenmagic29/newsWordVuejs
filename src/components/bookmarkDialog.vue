@@ -89,12 +89,15 @@ export default {
   overflow: auto;
   z-index: 2;
   font-size: 1.5rem;
+  margin: 15px;
+
 }
 
 .bookmark-dialog__header {
   display: flex;
   align-items: center;
   padding: var(--PADDING);
+  margin: 10px;
 }
 
 .bookmark-dialog__title {
@@ -106,5 +109,6 @@ export default {
 
   padding: var(--PADDING);
   flex-direction: column;
+  margin: 10px;
 }
 </style>
