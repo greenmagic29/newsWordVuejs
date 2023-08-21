@@ -89,7 +89,7 @@ export default {
   overflow: auto;
   z-index: 2;
   font-size: 1.5rem;
-  margin: 15px;
+
 
 }
 
