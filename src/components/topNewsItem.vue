@@ -46,6 +46,7 @@ export default {
       type: Object,
       default: () => {
         name: "";
+        id: "";
       },
     },
     newsIndex: Number,
@@ -62,7 +63,7 @@ export default {
       try {
         const payload = { mode };
         const res = await fetch(
-          `${this.backendPath}/news/topNews/createTopNews/${this.newsIndex}`,
+          `${this.backendPath}/news/topNews/createTopNews/${this.topNew.id}`,
           {
             method: "POST",
             headers: {
