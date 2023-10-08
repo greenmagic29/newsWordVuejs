@@ -46,8 +46,32 @@ function getSelection(quill) {
       console.log("User cursor is at index", range.index);
     } else {
       const text = quill.getText(range.index, range.length);
+      const fullText = quill.getText();
+      console.log("🚀 ~ file: docEdit.vue:50 ~ getSelection ~ fullText:", fullText)
       console.log("User has highlighted: ", text);
-      return text.trim();
+      //const regex = /[^.?!]*(?<=[.?\s!])${text.trim()}(?=[\s.?!])[^.?!]*[.?!]/igm;
+      // Alternative syntax using RegExp constructor
+      const regex = new RegExp(`[^.?!\n]*(?<=[.?\\s!])${text.trim()}(?=[\\s.?!])[^.?!]*[.?!]`, 'igm')
+      let m;
+      let firstLine = "";
+
+
+      while ((m = regex.exec(fullText)) !== null) {
+          // This is necessary to avoid infinite loops with zero-width matches
+          if (m.index === regex.lastIndex) {
+              regex.lastIndex++;
+          }
+          
+          // The result can be accessed through the `m`-variable.
+
+          m.forEach((match, groupIndex) => {
+                if(firstLine === "") {
+                  firstLine = match;
+                }
+          });
+      }
+      
+      return {text: text.trim(), line: firstLine};
     }
   } else {
     console.log("User cursor is not in editor");
@@ -57,16 +81,18 @@ function getSelection(quill) {
 }
 
 //old bold
+//DEPRECATED
 function customBoldHandler(paragraphId, backendPath) {
   return function (value) {
     console.log("🚀 ~ file: docEdit.js:3 ~ customBoldHandler ~ value", value);
     if (value) {
       this.quill.format("bold", true);
-      const text = getSelection(this.quill);
+      const { text, line }= getSelection(this.quill);
       console.log("🚀 ~ file: docEdit.js:24 ~ customBoldHandler ~ text", text);
       //TODO: call api to save the text in db highlight words table
       const payload = {
         word: text,
+        line:line,
         paragraphId: paragraphId,
       };
       fetch(`${backendPath}/bookmark`, {
@@ -201,7 +227,7 @@ export default {
     const customButton = document.querySelector("#bookmarkWord-icon");
 
     customButton.addEventListener("click", function () {
-      const text = getSelection(quill);
+      const { text, line } = getSelection(quill);
       console.log(
         "🚀 ~ file: docEdit.js:135 ~ customButton.addEventListener ~ text",
         text
@@ -211,6 +237,7 @@ export default {
       //TODO: call api to save the text in db highlight words table
       const payload = {
         word: text,
+        line: line,
         paragraphId: paragraphId,
       };
       fetch(`${backendPathForMounted}/bookmark`, {

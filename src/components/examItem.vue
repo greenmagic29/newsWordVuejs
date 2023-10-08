@@ -1,6 +1,7 @@
 <template>
   <div class="exam_outer">
     <header class="exam_header">What is the meaning of {{ word }}? </header>
+    <p>{{ line }}</p>
     <section class="exam_item">
       <div v-for="(question, index) in questions" :key="index" :value="index" @click="clearSubmittedMsg()" class="exam_option">
         <input type="radio" :id="index" :value="index" v-model="inputtedAns" />
@@ -23,7 +24,7 @@ import { queryExceptWord } from '../utils/sqlitedb.js';
 const CORRECT_MSG = "So Smart! You are correct.";
 const WRONG_MSG = "Please try again.";
 export default {
-  props: ['word', 'def'],
+  props: ['word', 'def', 'line'],
   // props: {
   //   word: {
   //     type: Object,

@@ -44,6 +44,15 @@ export async function initTable() {
         modified_date timestamp default CURRENT_TIMESTAMP 
       )`;
       await db.execute(sql);
+      try {
+        //20231007 new line column created
+        const createLineSql = 'alter table dictionary add column line text default null';
+        await db.execute(createLineSql);
+      }
+      catch(er) {
+        console.log("🚀 ~ file: sqlitedb.js:52 ~ initTable ~ er:", er)
+        
+      }
 
       const sqlCache = `Create table if not exists cachedTable(
         id integer primary key,
@@ -88,11 +97,11 @@ export async function updateWordCache() {
   }
 }
 
-export async function insertWord(word, definition) {
+export async function insertWord(word, definition, line) {
   if(db) {
     try {
-      const sql = `INSERT INTO dictionary (word, definition) values (?, ?)`;
-      const values = [word, definition];
+      const sql = `INSERT INTO dictionary (word, definition, line) values (?, ?, ?)`;
+      const values = [word, definition, line];
       await db.run(sql, values);
     } catch (error) {
       console.log("🚀 ~ file: sqlitedb.js:46 ~ insertWord ~ error:", error)
@@ -121,7 +130,7 @@ export async function queryWordByLimit() {
       //
 
 
-      const sql =  `Select word, definition from dictionary order by modified_date desc limit 12`;
+      const sql =  `Select word, definition, line from dictionary order by modified_date desc limit 12`;
       const values = [];
       const result = await db.query(sql, values)
       console.log("🚀 ~ file: sqlitedb.js:77 ~ queryData ~ result.values:", JSON.stringify(result.values))
@@ -197,7 +206,8 @@ export async function createTestNotification(){
           route: `exam`,
           word: {
             text: "pouring",
-            def: "pouring defsss"
+            def: "pouring defsss",
+            line: "pouring line sentence."
           }
         },
         schedule: {
@@ -216,13 +226,14 @@ export async function createNotifications() {
       await createConnection();
       await openDB();
       for (let bdWord of backendWords.row) {
-        await insertWord(bdWord.word, bdWord.def.definition)
+        await insertWord(bdWord.word, bdWord.def.definition, bdWord.line)
       }
       
       const words = await queryWordByLimit();
       for (let j = 0; j < 12; j++) {
         const wordString = words[j].word;
         const wordDefString = words[j].definition;
+        const wordLineString = words[j].line;
         const hour = j + 9;
         await LocalNotifications.schedule({
           notifications: [
@@ -235,7 +246,8 @@ export async function createNotifications() {
                 route: `exam`,
                 word: {
                   text: wordString,
-                  def: wordDefString
+                  def: wordDefString,
+                  line: wordLineString
                 }
               },
               schedule: {

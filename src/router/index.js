@@ -46,7 +46,7 @@ const router = createRouter({
     },
     {
       name: "exam",
-      path: "/exam/:word/:def",
+      path: "/exam/:word/:line/:def",
       component: ExamItem,
       props: true
     },
