@@ -145,7 +145,7 @@ export async function queryWordByLimit() {
 export async function queryWordByWord(word) {
   if(db) {
     try {
-      const sql =  `Select word, definition from dictionary where word like ?`;
+      const sql =  `Select word, definition, line from dictionary where word like ?`;
       const values = [word];
       const result = await db.query(sql, values)
       console.log("🚀 ~ file: sqlitedb.js:77 ~ queryData ~ result.values:", JSON.stringify(result.values))
@@ -195,6 +195,10 @@ export async function getLatestWords() {
   }
 }
 export async function createTestNotification(){
+  const words = await queryWordByWord("stretch");
+  const wordString = words[0].word;
+  const wordDefString = words[0].definition;
+  const wordLineString = words[0]?.line ?? "-";
   await LocalNotifications.schedule({
     notifications: [
       {
@@ -205,9 +209,9 @@ export async function createTestNotification(){
         extra: {
           route: `exam`,
           word: {
-            text: "pouring",
-            def: "pouring defsss",
-            line: "pouring line sentence."
+            text: wordString,
+            def: wordDefString,
+            line: wordLineString
           }
         },
         schedule: {
@@ -233,7 +237,7 @@ export async function createNotifications() {
       for (let j = 0; j < 12; j++) {
         const wordString = words[j].word;
         const wordDefString = words[j].definition;
-        const wordLineString = words[j].line;
+        const wordLineString = words[j]?.line ?? "-";
         const hour = j + 9;
         await LocalNotifications.schedule({
           notifications: [

@@ -138,7 +138,7 @@ export default {
           const extra = payload.notification.extra;
           console.log("🚀 ~ file: App.vue:147 ~ LocalNotifications.addListener ~ extra:", JSON.stringify(extra))
           // use route to redirect
-          tmpRouter.push({ name: extra.route, params: { word: extra.word.text, line: extra.word.line || "", def: extra.word.def } })
+          tmpRouter.push({ name: extra.route, params: { word: extra.word.text, line: extra.word.line, def: extra.word.def } })
       });
       //update the latest bookmark to notification once a day
       const lastDateString = (await getCache('dictionary'))[0]['last_update_date'];
