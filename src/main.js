@@ -9,7 +9,10 @@ import { Capacitor } from "@capacitor/core";
 import {createConnection, openDB, initTable} from "./utils/sqlitedb"
 
 
+import Vue3TouchEvents from "vue3-touch-events";
+
 const app = createApp(App);
+app.use(Vue3TouchEvents);
 
 app.use(createPinia());
 app.use(router);

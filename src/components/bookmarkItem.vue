@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="bookmark-dialog__word-container">
-      <span class="bookmark-dialog__word">{{ bookmark.word }}</span>
+      <span class="bookmark-dialog__word" @click="getTranslateDetails()">{{ bookmark.word }}</span>
       <span class="material-symbols-outlined" @click="speak(bookmark.word)">
         headphones
       </span>
@@ -91,7 +91,7 @@ export default {
 .bookmark-dialog__word-container {
   display: flex;
   position: sticky;
-  top: 0;
+  top: 10px;
   background-color: var(--color-background-soft);
   align-items: center;
 }

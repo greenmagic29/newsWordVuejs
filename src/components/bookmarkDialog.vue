@@ -1,12 +1,15 @@
 <template>
   <div class="bookmark-dialog">
     <header class="bookmark-dialog__header">
+      <div class="bookmark-dialog__top_close" v-touch:swipe.bottom="closeDialog"></div>
+    </header>
+    <!-- <header class="bookmark-dialog__header">
       <span class="material-symbols-outlined"> library_books </span>
       <span class="bookmark-dialog__title"> Bookmarks</span>
       <span class="material-symbols-outlined" @click="closeDialog()">
         close
       </span>
-    </header>
+    </header> -->
     <section>
       <ul class="bookmark-dialog__bookmark-item">
         <li
@@ -36,6 +39,7 @@ export default {
     return { meanings: [], count: 0 };
   },
   methods: {
+
     async getBookmarks() {
       try {
         const res = await fetch(
@@ -90,15 +94,31 @@ export default {
   z-index: 2;
   font-size: 1.5rem;
 
-
 }
 
+.bookmark-dialog__top_close {
+  background-color: var(--color-background-soft);
+  border-top: 4px solid white;
+  width: 25%;
+  margin: 4px auto;
+  padding: 10px;
+  border-radius: 3px;
+
+
+}
 .bookmark-dialog__header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background-color: var(--color-background-soft);
+}
+/* .bookmark-dialog__header {
   display: flex;
   align-items: center;
   padding: var(--PADDING);
   margin: 10px;
-}
+
+} */
 
 .bookmark-dialog__title {
   flex-grow: 1;
