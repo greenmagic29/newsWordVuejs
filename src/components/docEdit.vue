@@ -26,7 +26,7 @@
         book
       </span>
     </div>
-    <div id="editor"></div>
+    <div id="editor" @click="bookmarkDialog.open = false"></div>
 
     <BookmarkDialog
       v-if="bookmarkDialog.open"
