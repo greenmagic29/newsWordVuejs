@@ -31,9 +31,9 @@
 
 <script>
 import BookmarkItem from "./bookmarkItem.vue";
-import VueResizable from 'vue-resizable'
+
 export default {
-  components: { BookmarkItem, VueResizable },
+  components: { BookmarkItem },
   props: {
     paragraphId: {
       type: String,
