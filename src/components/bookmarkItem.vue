@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div >
     <div class="bookmark-dialog__word-container">
       <span class="bookmark-dialog__word" @click="getTranslateDetails()">{{ bookmark.word }}</span>
       <span class="material-symbols-outlined" @click="speak(bookmark.word)">
@@ -7,6 +7,9 @@
       </span>
       <span class="material-symbols-outlined" @click="getTranslateDetails()">
         zoom_in
+      </span>
+      <span class="material-symbols-outlined" @click="closeDialog()" v-if="showCloseBtn">
+        close
       </span>
     </div>
     <ul class="meaning__translate" v-if="openedTranslate && translateDetails">
@@ -40,9 +43,13 @@ export default {
     },
   },
   data() {
-    return { count: 0, openedTranslate: false, translateDetails: null };
+    return { count: 0, openedTranslate: false, translateDetails: null, showCloseBtn: false, scrollTop: 1 };
   },
   methods: {
+    handleScroll(event) {
+      this.scrollTop = event.currentTarget.scrollTop;
+      console.log("🚀 ~ file: bookmarkItem.vue:51 ~ handleScroll ~ this.scrollTop:", this.scrollTop)
+    },
     async speak(word) {
       try {
         await textToVoice(word);
