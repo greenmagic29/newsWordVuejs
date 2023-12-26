@@ -4,6 +4,7 @@ import DocEditView from "../views/DocEditView.vue";
 import LoginView from "../views/LoginView.vue";
 import ExamItem from "../components/examItem.vue";
 import TestView from "../views/TestView.vue";
+import DictView from "../views/DictView.vue"
 
 function ifAuthenticated(to, from, next) {
   console.log(
@@ -54,6 +55,11 @@ const router = createRouter({
       name: "test",
       path: "/test",
       component: TestView
+    },
+    {
+      name: "dict",
+      path: "/dict",
+      component: DictView
     }
   ],
 });

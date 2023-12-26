@@ -27,8 +27,8 @@
       </div>
 
       <div style="padding: 1rem; min-width: 74px">
-        <router-link to="/about" class="bottom-bar-link"
-          >About
+        <router-link to="/dict" class="bottom-bar-link"
+          >Dict
           <span class="material-symbols-outlined bottom-bar-icon"> help </span>
         </router-link>
       </div>

@@ -154,7 +154,7 @@ export default {
   },
   computed: {
     showBack() {
-      if (["/", "/login"].includes(this.$router.currentRoute.value.fullPath)) {
+      if (["/", "/login", "/dict"].includes(this.$router.currentRoute.value.fullPath)) {
         return false;
       }
       return true;

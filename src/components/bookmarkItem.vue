@@ -32,6 +32,7 @@
   </div>
 </template>
 <script>
+
 import textToVoice from "../utils/textToVoice.js";
 export default {
   props: {
@@ -41,9 +42,21 @@ export default {
         word: "";
       },
     },
+    translation: {
+      type: Object,
+      required: false,
+      // default: () => {
+      //   word: ""
+      // }
+    }
   },
   data() {
     return { count: 0, openedTranslate: false, translateDetails: null, showCloseBtn: false, scrollTop: 1 };
+  },
+  mounted() {
+    if(this.translation) {
+      this.translateDetails = this.translation;
+    }
   },
   methods: {
     handleScroll(event) {
@@ -104,5 +117,8 @@ export default {
 }
 .bookmark-dialog__word {
   flex-grow: 1;
+}
+.meaning__translate {
+  padding: 0;
 }
 </style>
