@@ -51,13 +51,9 @@ export default {
     }
   },
   data() {
-    return { count: 0, openedTranslate: false, translateDetails: null, showCloseBtn: false, scrollTop: 1 };
+    return { count: 0,  showCloseBtn: false, scrollTop: 1 };
   },
-  mounted() {
-    if(this.translation) {
-      this.translateDetails = this.translation;
-    }
-  },
+
   methods: {
     handleScroll(event) {
       this.scrollTop = event.currentTarget.scrollTop;
@@ -75,7 +71,8 @@ export default {
       if (this.openedTranslate === false && this.translateDetails === null) {
         await this.getDefination();
       }
-      this.openedTranslate = !this.openedTranslate;
+      //this.openedTranslate = !this.openedTranslate;
+      this.bookmark.open = !this.bookmark.open
     },
     async getDefination() {
       try {
@@ -103,6 +100,17 @@ export default {
         return this.bookmark.word;
       }
     },
+    translateDetails() {
+      if(this.translation) {
+        return this.translation
+      }
+    },
+    openedTranslate() {
+      if(this.bookmark && this.bookmark.open !== null) {
+        return this.bookmark.open
+      }
+      return false;
+    }
   },
 };
 </script>
