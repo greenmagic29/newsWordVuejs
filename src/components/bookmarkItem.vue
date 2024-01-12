@@ -45,13 +45,14 @@ export default {
     translation: {
       type: Object,
       required: false,
+      default: () => null
       // default: () => {
       //   word: ""
       // }
     }
   },
   data() {
-    return { count: 0,  showCloseBtn: false, scrollTop: 1 };
+    return { count: 0,  showCloseBtn: false, scrollTop: 1, dataTranslation: null };
   },
 
   methods: {
@@ -68,7 +69,8 @@ export default {
     },
     async getTranslateDetails() {
       //if it is closed and no translate details, get the defination
-      if (this.openedTranslate === false && this.translateDetails === null) {
+
+      if (this.openedTranslate === false && this.translateDetails === undefined) {
         await this.getDefination();
       }
       //this.openedTranslate = !this.openedTranslate;
@@ -85,7 +87,7 @@ export default {
           },
         });
         const resBody = JSON.parse(await res.text());
-        this.translateDetails = resBody.def;
+        this.dataTranslation = resBody.def;
       } catch (error) {
         console.log(
           "🚀 ~ file: bookmarkItem.js:43 ~ getDefination ~ error:",
@@ -103,6 +105,9 @@ export default {
     translateDetails() {
       if(this.translation) {
         return this.translation
+      }
+      else if(this.dataTranslation) {
+        return this.dataTranslation
       }
     },
     openedTranslate() {
