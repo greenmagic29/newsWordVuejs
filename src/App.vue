@@ -108,6 +108,7 @@ import MobileRequestNotificationBanner from "./components/mobilerequestNotificat
 import {LocalNotifications} from '@capacitor/local-notifications'
 import { createNotifications, getCache } from "./utils/sqlitedb";
 import dayjs from 'dayjs'
+import { App as CapApp } from '@capacitor/app';
 
 export default {
    data() {
@@ -122,6 +123,14 @@ export default {
     },
   },
   async mounted() {
+    const tmpRouter = this.$router;
+    CapApp.addListener("backButton", ({canGoBack}) => {
+      if(!canGoBack){
+        CapApp.exitApp();
+      } else {
+        tmpRouter.back();
+      }
+    })
     console.log("🚀 ~ file: App.vue:140 ~ isInLoginPage ~ this.$router.currentRoute.value.fullPath:", this.$router.currentRoute.value.fullPath)
     const permission = (await LocalNotifications.checkPermissions()).display;
     if(['prompt', 'prompt-with-rationale'].includes(permission)) {
