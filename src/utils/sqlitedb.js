@@ -230,13 +230,13 @@ export async function createNotifications() {
       await createConnection();
       await openDB();
       for (let bdWord of backendWords.row) {
-        await insertWord(bdWord.word, bdWord.def.definition, bdWord.line)
+        await insertWord(bdWord.word, bdWord.def.definition + "\n\n" + bdWord.def.translation, bdWord.line)
       }
       
       const words = await queryWordByLimit();
       for (let j = 0; j < 12; j++) {
         const wordString = words[j].word;
-        const wordDefString = words[j].definition;
+        const wordDefString = words[j].definition ;
         const wordLineString = words[j]?.line ?? "-";
         const hour = j + 9;
         await LocalNotifications.schedule({
