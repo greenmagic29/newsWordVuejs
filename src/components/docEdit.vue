@@ -12,6 +12,7 @@
       id="toolbar"
       class="quil-toolbar"
     >
+
       <!-- Add buttons as you would before -->
       <!-- <button class="ql-bold">Bold</button>
   <button class="ql-italic">italix</button>  -->
@@ -80,8 +81,7 @@ function getSelection(quill) {
   return null;
 }
 
-//old bold
-//DEPRECATED
+
 function customBoldHandler(paragraphId, backendPath) {
   return function (value) {
     console.log("🚀 ~ file: docEdit.js:3 ~ customBoldHandler ~ value", value);
@@ -173,11 +173,12 @@ export default {
     const paragraphId = this.$route.params.id;
     const quill = new Quill("#editor", {
       theme: "snow",
-      formats: {
-        Inline: {
-          size: "large",
-        },
-      },
+      
+      // formats: {
+      //   Inline: {
+      //     size: "large",
+      //   },
+      // },
       modules: {
         toolbar: {
           container: "#toolbar",
