@@ -67,6 +67,63 @@ export async function initTable() {
       console.log("🚀 ~ file: sqlitedb.js:30 ~ initTable ~ error:", error)
       
     }
+
+    try {
+      const pokemonSql = `Create table if not exists pokemon(
+        no INTEGER primary key,
+        name TEXT NULL,
+        pic_link TEXT NULL,
+        meanings TEXT NULL,
+        chinese_name TEXT NULL,
+        last_update_date timestamp default current_timestamp
+      )`;
+      await db.execute(pokemonSql);
+
+      //update data if the last_update_date in local is earlier than the db one
+      const localLastUpdateSql = `select last_update_date from cachedTable where name = 'pokemon'`;
+      const localLastRes = await db.query(localLastUpdateSql);
+      if(localLastRes.values?.length >0) {
+        const localLastDate = localLastRes.values[0].last_update_date;
+        console.log("🚀 ~ initTable ~ localLastDate:", localLastDate)
+        
+        const res = await fetch(`${import.meta.env.VITE_backendPath}/pokemon/latestDate`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            // 'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: localStorage.getItem("login"),
+          },
+        });
+        const resBody = JSON.parse(await res.text());
+        console.log("🚀 ~ initTable ~ resBody:", resBody);
+
+        if(localLastDate < resBody.lastDate ) {
+          //TODO: update the latest data
+        }
+      }
+      if(localLastRes.values?.length ?? 0 === 0) {
+        const res = await fetch(`${import.meta.env.VITE_backendPath}/pokemon/json`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            // 'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: localStorage.getItem("login"),
+          },
+        });
+        const resBody = JSON.parse(await res.text());
+
+        const insertSql = `insert OR IGNORE into pokemon(no, name, pic_link, meanings, chinese_name) values (?,?,?,?,?)`
+        for(let pok of resBody.row) {
+          await db.run(insertSql, [pok.no, pok.name, pok.pic_link, JSON.stringify({meanings: pok.meanings}), pok.chinese_name]);
+
+        }
+      }
+
+    } catch (error) {
+      console.log("🚀 ~ initTable ~ pokemonSql error:", error)
+      
+    }
+
   }
 }
 export async function getCache(type) {
