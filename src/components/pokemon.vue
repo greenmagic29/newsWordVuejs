@@ -5,21 +5,29 @@
         Pokemon List
       </header>
       <main>
+        <div class="pokemon__search-bar">
+          <input type="text" name="" id="" :placeholder="placeholder" v-model="searchText" class="pokemon__search-input" @keyup.enter="search(searchText)">
+          <span class="material-symbols-outlined" @click="search(searchText)" >
+            search
+          </span>
+        </div>
         <div
         v-for="(pok, index) in pokemons"
         :key="index"
+        class="pokemon__item"
         >
-        <p>No. {{ pok.no }}</p>
-        <p>Name: {{ pok.name}}</p>
-        <div
-        v-for="(meaning, index) in pok.meanings"
-        :key="index"
-        >
-          <p>Origin: {{ meaning.origin }}</p>
-          <p>Definition: {{ meaning.def }}</p>
+          <p>No. {{ pok.no }}</p>
+          <p>Name: {{ pok.name }}</p>
+
+          <div
+            v-for="meaning in JSON.parse(pok.meanings).meanings"
+            
+          >
+            <p>Origin: {{ meaning.origin }}</p>
+            <p>Definition: {{ meaning.def }}</p>
+          </div>
+          <p>Chinese Name: {{ pok.chinese_name }}</p>
         </div>
-        <p>Chinese Name: {{ pok.chinese_name }}</p>
-      </div>
       </main>
     </div>
 
@@ -28,16 +36,59 @@
 </template>
 
 <script>
-import { queryPokemon } from '../utils/sqlitedb.js';
+import { queryPokemon, queryPokemonByName } from '../utils/sqlitedb.js';
 export default {
   data() {
     return {
-      pokemons: []
+      pokemons: [],
+      searchText: ""
     }
   },
   async mounted() {
     console.log("🚀 ~ mounted ~ mounted:")
     this.pokemons = await queryPokemon(1, 151, 10, 0);
+  },
+  methods: {
+    async search(keyword) {
+      try {
+        this.pokemons = await queryPokemonByName(keyword)
+      } catch (error) {
+        console.log("🚀 ~ search ~ error:", error)
+        
+      }
+
+    }
   }
 }
 </script>
+
+<style>
+.search-page {
+  width: 100%;
+  min-height: min-content;
+}
+.pokemon__search-bar {
+  display: flex;
+  align-items: center;
+}
+.pokemon__item {
+  border: 1px ;
+  border-color: white;
+  border-style: solid;
+  border-radius: 0.2rem;
+  margin: 5px;
+  padding: 5px;
+}
+
+.pokemon__search-input {
+  flex-grow: 1;
+  background: var(--color-background-soft);
+    border-radius: 0.2rem;
+    font-size: 1rem;
+    padding: 0.2rem;
+    color: var(--color-text);
+    border-color: white;
+    border-style: solid;
+}
+
+</style>
