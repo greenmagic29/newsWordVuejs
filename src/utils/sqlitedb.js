@@ -275,6 +275,23 @@ export async function queryPokemon(from, to, limit, offset) {
       
   }
 }
+
+export async function queryPokemonByName(keyword) {
+  if(db) {
+    try {
+      const sql = `Select no, name, pic_link, meanings, chinese_name from pokemon where lower(name) like lower('%' || ? || '%') or chinese_name like '%' ||? || '%' limit ? offset ?`
+      const values = [keyword, keyword, 10, 0];
+      const result = await db.query(sql, values)
+      console.log("🚀 ~ queryPokemon ~ result.values:", result.values?.length)
+      return result.values
+    } catch (error) {
+     console.log("🚀 ~ queryPokemonByName ~ error:", error)
+     
+      
+    }
+  }
+
+} 
 export async function createTestNotification(){
   const words = await queryWordByWord("stretch");
   const wordString = words[0].word;
