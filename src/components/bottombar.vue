@@ -18,7 +18,7 @@
       </div>
 
       <div style="padding: 1rem; min-width: 74px">
-        <router-link to="/pokemons" class="bottom-bar-link">
+        <router-link to="/pokemon" class="bottom-bar-link">
           Pokemons
           <span class="material-symbols-outlined bottom-bar-icon">
             settings
