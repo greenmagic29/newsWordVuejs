@@ -79,29 +79,35 @@ export async function initTable() {
       )`;
       await db.execute(pokemonSql);
 
+
+
       //update data if the last_update_date in local is earlier than the db one
       const localLastUpdateSql = `select last_update_date from cachedTable where name = 'pokemon'`;
       const localLastRes = await db.query(localLastUpdateSql);
-      if(localLastRes.values?.length >0) {
+      console.log("🚀 ~ initTable ~ localLastRes:", JSON.stringify(localLastRes))
+      console.log("🚀 ~ initTable ~ localLastRes length:", localLastRes?.values?.length)
+      
+      if(localLastRes.values.length > 0) {
         const localLastDate = localLastRes.values[0].last_update_date;
         console.log("🚀 ~ initTable ~ localLastDate:", localLastDate)
-        
-        const res = await fetch(`${import.meta.env.VITE_backendPath}/pokemon/latestDate`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            // 'Content-Type': 'application/x-www-form-urlencoded',
-            Authorization: localStorage.getItem("login"),
-          },
-        });
-        const resBody = JSON.parse(await res.text());
-        console.log("🚀 ~ initTable ~ resBody:", resBody);
+        //TODO: check lastestDate
+        // const res = await fetch(`${import.meta.env.VITE_backendPath}/pokemon/latestDate`, {
+        //   method: "GET",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //     // 'Content-Type': 'application/x-www-form-urlencoded',
+        //     Authorization: localStorage.getItem("login"),
+        //   },
+        // });
+        // const resBody = JSON.parse(await res.text());
+        // console.log("🚀 ~ initTable ~ resBody:", resBody);
 
-        if(localLastDate < resBody.lastDate ) {
-          //TODO: update the latest data
-        }
+        // if(localLastDate < resBody.lastDate ) {
+        //   //TODO: update the latest data
+        // }
       }
-      if(localLastRes.values?.length ?? 0 === 0) {
+      if((localLastRes?.values?.length ?? 0) === 0) {
+        console.log(" fetch pokemon list")
         const res = await fetch(`${import.meta.env.VITE_backendPath}/pokemon/json`, {
           method: "GET",
           headers: {
@@ -117,6 +123,8 @@ export async function initTable() {
           await db.run(insertSql, [pok.no, pok.name, pok.pic_link, JSON.stringify({meanings: pok.meanings}), pok.chinese_name]);
 
         }
+        const createPokemonCacheRecordSql = `INSERT or ignore into cachedTable (name) values ('pokemon')`;
+        await db.execute(createPokemonCacheRecordSql);
       }
 
     } catch (error) {
@@ -249,6 +257,22 @@ export async function getLatestWords() {
   } catch (error) {
     console.log("🚀 ~ file: mobileRequestNotificationBanner.vue:41 ~ getLatestWords ~ error:", error)
     
+  }
+}
+
+export async function queryPokemon(from, to, limit, offset) {
+  if(db) {
+    try {
+      const sql = `Select no, name, pic_link, meanings, chinese_name from pokemon where no >= ? and no <= ? limit ? offset ?`
+      const values = [from, to, limit, offset];
+      const result = await db.query(sql, values)
+      console.log("🚀 ~ queryPokemon ~ result.values:", result.values?.length)
+      return result.values
+    } catch (error) {
+      console.log("🚀 ~ queryPokemon ~ error:", error)
+      
+    }
+      
   }
 }
 export async function createTestNotification(){
