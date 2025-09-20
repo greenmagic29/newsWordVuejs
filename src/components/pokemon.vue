@@ -19,15 +19,36 @@
           <p>No. {{ pok.no }}</p>
           <p>Name: {{ pok.name }}</p>
 
-          <div
-            v-for="meaning in JSON.parse(pok.meanings).meanings"
-            
-          >
-            <p>Origin: {{ meaning.origin }}</p>
-            <p>Definition: {{ meaning.def }}</p>
+          <div v-if="isMobile">
+            <div
+              v-for="meaning in JSON.parse(pok.meanings).meanings"
+              
+            >
+              <p>Origin: {{ meaning.origin }}</p>
+              <p>Definition: {{ meaning.def }}</p>
+            </div>
+          </div>
+          <div v-else>
+            <div
+              v-for="meaning in pok.meanings"
+              
+            >
+              <p>Origin: {{ meaning.origin }}</p>
+              <p>Definition: {{ meaning.def }}</p>
+            </div>
           </div>
           <p>Chinese Name: {{ pok.chinese_name }}</p>
         </div>
+        <nav class="pokemon__pagination">
+          <span class="material-symbols-outlined pokemon__pagination__btn" @click="offset = Math.max(0, offset - limit); search(searchText, limit, offset)">
+            arrow_left_alt
+          </span>
+          <span class="material-symbols-outlined pokemon__pagination__btn" @click="offset = offset + limit; search(searchText, limit, offset)">
+            arrow_right_alt
+          </span>
+
+        </nav>
+
       </main>
     </div>
 
@@ -41,7 +62,10 @@ export default {
   data() {
     return {
       pokemons: [],
-      searchText: ""
+      searchText: "",
+      placeholder: "Search by name",
+      limit: 10,
+      offset: 0,
     }
   },
   async mounted() {
@@ -49,9 +73,10 @@ export default {
     this.pokemons = await queryPokemon(1, 151, 10, 0);
   },
   methods: {
-    async search(keyword) {
+    async search(keyword, limit = 10, offset = 0) {
       try {
-        this.pokemons = await queryPokemonByName(keyword)
+        this.pokemons = await queryPokemonByName(keyword, limit, offset);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (error) {
         console.log("🚀 ~ search ~ error:", error)
         
@@ -89,6 +114,17 @@ export default {
     color: var(--color-text);
     border-color: white;
     border-style: solid;
+}
+.pokemon__pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+}
+.pokemon__pagination__btn {
+  cursor: pointer;
+  font-size: 2rem;
+  margin: 0 1rem;
 }
 
 </style>

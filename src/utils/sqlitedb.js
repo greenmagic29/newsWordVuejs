@@ -274,13 +274,17 @@ export async function queryPokemon(from, to, limit, offset) {
     }
       
   }
+  //get from backend
+  return await queryPokemonFromBackend(limit, offset, "");
+
+
 }
 
-export async function queryPokemonByName(keyword) {
+export async function queryPokemonByName(keyword, limit, offset) {
   if(db) {
     try {
       const sql = `Select no, name, pic_link, meanings, chinese_name from pokemon where lower(name) like lower('%' || ? || '%') or chinese_name like '%' ||? || '%' limit ? offset ?`
-      const values = [keyword, keyword, 10, 0];
+      const values = [keyword, keyword, limit, offset];
       const result = await db.query(sql, values)
       console.log("🚀 ~ queryPokemon ~ result.values:", result.values?.length)
       return result.values
@@ -290,8 +294,30 @@ export async function queryPokemonByName(keyword) {
       
     }
   }
+  return await queryPokemonFromBackend(limit, offset, keyword);
 
-} 
+}
+
+async function queryPokemonFromBackend(limit, offset, search) {
+  try {
+    const res = await fetch(`${import.meta.env.VITE_backendPath}/pokemon/search?limit=${limit}&offset=${offset}&search=${encodeURIComponent(search)}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: localStorage.getItem("login"),
+      },
+    });
+    const resBody = JSON.parse(await res.text());
+    return resBody.pokemon;
+  } catch (error) {
+    console.log(
+      "🚀 ~ file: bookmarkItem.js:43 ~ getDefination ~ error:",
+      error
+    );
+  }
+}
+
 export async function createTestNotification(){
   const words = await queryWordByWord("stretch");
   const wordString = words[0].word;
