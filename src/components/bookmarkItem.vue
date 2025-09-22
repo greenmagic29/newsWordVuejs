@@ -124,7 +124,7 @@ export default {
 .bookmark-dialog__word-container {
   display: flex;
   position: sticky;
-  top: 10px;
+  top: -1px;
   background-color: var(--color-background-soft);
   align-items: center;
 }
