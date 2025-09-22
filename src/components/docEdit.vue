@@ -1,5 +1,5 @@
   <template>
-  <div>
+  <div class="doc-edit">
     <input
       type="text"
       @blur="updateTitle()"
@@ -32,7 +32,7 @@
     <BookmarkDialog
       v-if="bookmarkDialog.open"
       :paragraphId="bookmarkDialog.data.paragraphId"
-      @close="bookmarkDialog.open = false"
+      @close="closeBookmarkDialog"
     ></BookmarkDialog>
   </div>
 </template>
@@ -145,6 +145,21 @@ export default {
     openBookmarkDialog() {
       this.bookmarkDialog.open = true;
       this.bookmarkDialog.data = { paragraphId: this.$route.params.id };
+      // add margin bottom so the editor content isn't hidden behind the fixed dialog
+      const el = document.querySelector('.doc-edit');
+      if (el) {
+        // use 50vh to match dialog max-height; add a small offset
+        el.style.marginBottom = '52vh';
+      }
+    },
+
+    closeBookmarkDialog() {
+      // close dialog and remove the temporary bottom margin
+      this.bookmarkDialog.open = false;
+      const el = document.querySelector('.doc-edit');
+      if (el) {
+        el.style.marginBottom = '';
+      }
     },
     async updateTitle() {
       const payload = {
