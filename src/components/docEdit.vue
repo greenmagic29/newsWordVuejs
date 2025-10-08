@@ -82,20 +82,61 @@ function getSelection(quill) {
 }
 
 
-function customBoldHandler(paragraphId, backendPath) {
-  return function (value) {
-    console.log("🚀 ~ file: docEdit.js:3 ~ customBoldHandler ~ value", value);
-    if (value) {
-      this.quill.format("bold", true);
-      const { text, line }= getSelection(this.quill);
-      console.log("🚀 ~ file: docEdit.js:24 ~ customBoldHandler ~ text", text);
+// function customBoldHandler(paragraphId, backendPath) {
+//   return function (value) {
+//     console.log("🚀 ~ file: docEdit.js:3 ~ customBoldHandler ~ value", value);
+//     if (value) {
+//       this.quill.format("bold", true);
+//       const { text, line }= getSelection(this.quill);
+//       console.log("🚀 ~ file: docEdit.js:24 ~ customBoldHandler ~ text", text);
+//       //TODO: call api to save the text in db highlight words table
+//       const payload = {
+//         word: text,
+//         line:line,
+//         paragraphId: paragraphId,
+//       };
+//       fetch(`${backendPath}/bookmark`, {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           // 'Content-Type': 'application/x-www-form-urlencoded',
+//           Authorization: localStorage.getItem("login"),
+//         },
+//         body: JSON.stringify(payload),
+//       })
+//         .then((res) => {
+//           console.log("🚀 ~ file: docEdit.js:49 ~ .then ~ res", res);
+//         this.openBookmarkDialog();
+//         })
+//         .catch((e) => {
+//           console.log(`customBoldHandler error: `, e);
+//         });
+//     } else {
+//       this.quill.format("bold", false);
+//     }
+//   };
+// }
+
+function customBookmarkHandler(paragraphId, backendPathForMounted, quill) {
+      const sel = getSelection(quill);
+      if (!sel) {
+        console.log('No text selected or cursor not in editor');
+        return;
+      }
+      const { text, line } = sel;
+      console.log(
+        "🚀 ~ file: docEdit.js:135 ~ customButton.addEventListener ~ text",
+        text
+      );
+      quill.format("bold", true);
+
       //TODO: call api to save the text in db highlight words table
       const payload = {
         word: text,
-        line:line,
+        line: line,
         paragraphId: paragraphId,
       };
-      fetch(`${backendPath}/bookmark`, {
+      fetch(`${backendPathForMounted}/bookmark`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -104,15 +145,13 @@ function customBoldHandler(paragraphId, backendPath) {
         },
         body: JSON.stringify(payload),
       })
-        .then((res) => {})
+        .then((res) => {
+          this.openBookmarkDialog();
+        })
         .catch((e) => {
           console.log(`customBoldHandler error: `, e);
         });
-    } else {
-      this.quill.format("bold", false);
     }
-  };
-}
 export default {
   components: {BookmarkDialog},
   data() {
@@ -121,6 +160,7 @@ export default {
       paragraph: { title: "" },
       bookmarkDialog: { open: false, data: {} },
       saveTimer: null,
+      quill: null,
     };
   },
   methods: {
@@ -198,14 +238,21 @@ export default {
         toolbar: {
           container: "#toolbar",
           handlers: {
-            bold: customBoldHandler(paragraphId, backendPathForMounted),
+            // bind the handler to the Vue component instance so `this` inside
+            // customBoldHandler refers to the component and can call methods
+            // like `openBookmarkDialog` and access `this.quill`.
+            //bold: customBoldHandler(paragraphId, backendPathForMounted).bind(this),
           },
         },
       },
       //readOnly: true
     });
 
-    this.saveTimer = setInterval(function () {
+  // keep a reference to the quill instance on the component so handlers
+  // that rely on `this.quill` can access it
+  this.quill = quill;
+
+  this.saveTimer = setInterval(function () {
       //
 
       // Save the entire updated text to localStorage
@@ -233,7 +280,7 @@ export default {
           changes = false;
         })
         .catch((e) => {
-          console.log(`customBoldHandler error: `, e);
+          console.log(`saveTimer error: `, e);
         });
       //}
     }, 3 * 1000);
@@ -242,34 +289,8 @@ export default {
     quill.disable();
     const customButton = document.querySelector("#bookmarkWord-icon");
 
-    customButton.addEventListener("click", function () {
-      const { text, line } = getSelection(quill);
-      console.log(
-        "🚀 ~ file: docEdit.js:135 ~ customButton.addEventListener ~ text",
-        text
-      );
-      quill.format("bold", true);
-
-      //TODO: call api to save the text in db highlight words table
-      const payload = {
-        word: text,
-        line: line,
-        paragraphId: paragraphId,
-      };
-      fetch(`${backendPathForMounted}/bookmark`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          // 'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: localStorage.getItem("login"),
-        },
-        body: JSON.stringify(payload),
-      })
-        .then((res) => {})
-        .catch((e) => {
-          console.log(`customBoldHandler error: `, e);
-        });
-    });
+  customButton.addEventListener("click", () => { customBookmarkHandler.call(this, paragraphId, backendPathForMounted, quill); });
+    
     //this checking must create after quill.setContents to prevent paragraph from save when first load
     quill.on("text-change", function (delta, oldDelta, source) {
       //quill.getContents()
