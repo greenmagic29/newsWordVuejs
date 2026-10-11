@@ -1,7 +1,7 @@
 <script setup>
 import { RouterLink, RouterView } from "vue-router";
 import BottomBar from "./components/bottombar.vue";
-import MobileRequestNotificationBanner from "./components/mobilerequestNotificationBanner.vue";
+import MobileRequestNotificationBanner from "./components/mobileRequestNotificationBanner.vue";
 </script>
 
 <template>
