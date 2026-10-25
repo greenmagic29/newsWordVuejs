@@ -28,6 +28,20 @@
         :class="`news-chat__message--${message.role}`"
       >
         {{ message.content }}
+        <button
+          v-if="
+            message.role === 'assistant' &&
+            message.id !== undefined &&
+            message.id !== null &&
+            String(message.id).trim() !== ''
+          "
+          class="news-chat__create-paragraph"
+          type="button"
+          :disabled="isCreatingParagraph"
+          @click="createParagraphFromNews(message)"
+        >
+          {{ isCreatingParagraph ? "Creating paragraph..." : "Create paragraph" }}
+        </button>
       </article>
       <p v-if="isSubmitting" class="news-chat__status" role="status">
         Finding news...
@@ -75,6 +89,7 @@ export default {
     return {
       isChatOpen: false,
       isSubmitting: false,
+      isCreatingParagraph: false,
       prompt: "",
       messages: [],
       errorMessage: "",
@@ -112,7 +127,12 @@ export default {
               : `The news search failed (${response.status}).`,
           );
         }
-        if (result?.success !== true || typeof result.agentResponse !== "string") {
+        if (
+          result?.success !== true ||
+          typeof result.agentResponse !== "string" ||
+          (typeof result.id !== "string" && typeof result.id !== "number") ||
+          String(result.id).trim() === ""
+        ) {
           throw new Error(
             typeof result?.message === "string"
               ? result.message
@@ -120,7 +140,11 @@ export default {
           );
         }
 
-        this.messages.push({ role: "assistant", content: result.agentResponse });
+        this.messages.push({
+          role: "assistant",
+          content: result.agentResponse,
+          id: result.id,
+        });
       } catch (error) {
         this.errorMessage =
           error instanceof Error
@@ -128,6 +152,65 @@ export default {
             : "Unable to find news. Please try again.";
       } finally {
         this.isSubmitting = false;
+        await this.scrollMessagesToBottom();
+      }
+    },
+    async createParagraphFromNews(message) {
+      if (
+        message?.id === undefined ||
+        message.id === null ||
+        String(message.id).trim() === "" ||
+        this.isCreatingParagraph
+      ) {
+        return;
+      }
+
+      this.errorMessage = "";
+      this.isCreatingParagraph = true;
+
+      try {
+        const response = await fetch(
+          `${this.backendPath}/news/topNews/createTopNews/${message.id}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: localStorage.getItem("login"),
+            },
+            body: JSON.stringify({ mode: "5098996f-226c-4898-8fc6-346837896c97" }),
+          },
+        );
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            typeof result?.message === "string"
+              ? result.message
+              : `The paragraph could not be created (${response.status}).`,
+          );
+        }
+        if (
+          result?.success === false ||
+          String(result.id).trim() === ""
+        ) {
+          throw new Error(
+            typeof result?.message === "string"
+              ? result.message
+              : "The paragraph creation returned an invalid response.",
+          );
+        }
+        console.log(
+          "🚀 before theeeee docedit call",
+          result
+        );
+        await this.$router.push(`/docEdit/${encodeURIComponent(result.id)}`);
+      } catch (error) {
+        this.errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Unable to create a paragraph. Please try again.";
+      } finally {
+        this.isCreatingParagraph = false;
         await this.scrollMessagesToBottom();
       }
     },
@@ -234,6 +317,23 @@ export default {
 .news-chat__message--assistant {
   align-self: flex-start;
   background: var(--color-background-soft);
+}
+
+.news-chat__create-paragraph {
+  display: block;
+  margin-top: 0.65rem;
+  border: 0;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: #2c3e50;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.news-chat__create-paragraph:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 .news-chat__error {

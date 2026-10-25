@@ -59,7 +59,8 @@ export default {
     return { count: 0, showPanel: false };
   },
   methods: {
-    async createParagraphFromNews(mode = "prime") {
+    //mode here is the mode uuid, which is one of the modes in the modes array
+    async createParagraphFromNews(mode) {
       try {
         const payload = { mode };
         const res = await fetch(
