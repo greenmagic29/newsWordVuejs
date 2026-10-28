@@ -1,10 +1,11 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import DocEditView from "../views/DocEditView.vue";
 import LoginView from "../views/LoginView.vue";
 import ExamItem from "../components/examItem.vue";
 import TestView from "../views/TestView.vue";
-import DictView from "../views/DictView.vue"
+import DictView from "../views/DictView.vue";
+import PokemonView from "../views/PokemonView.vue"
 
 function ifAuthenticated(to, from, next) {
   console.log(
@@ -18,7 +19,7 @@ function ifAuthenticated(to, from, next) {
   next({ name: 'login' })
 }
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: "/",
@@ -60,6 +61,11 @@ const router = createRouter({
       name: "dict",
       path: "/dict",
       component: DictView
+    },
+    {
+      name: "pokemon",
+      path: "/pokemon",
+      component: PokemonView
     }
   ],
 });

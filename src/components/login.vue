@@ -47,28 +47,37 @@
 </template>
 <script>
 import jwt_decode from "jwt-decode";
-import { GoogleAuth } from "@codetrix-studio/capacitor-google-auth";
+import { SocialLogin } from '@capgo/capacitor-social-login';
 
 export default {
 
   methods: {
     async logInMobile() {
-      const response = await GoogleAuth.signIn();
+      //const response = await GoogleAuth.signIn();
+      const response = await SocialLogin.login({
+        provider: 'google',
+        // options: {
+        // scopes: ['email', 'profile'],
+        // forceRefreshToken: true // if you need refresh token
+        // }
+      });
       console.log(
         "🚀 ~ file: login.vue:44 ~ logIn ~ response:",
         JSON.stringify(response)
       );
-      await this.handleCredResMobile(response);
+      await this.handleCredResMobile(response.result);
     },
     async handleCredResMobile(res) {
+      //await this.handleCredRes(res, "idToken");
       await this.handleCredRes(res, "idToken");
     },
     async handleCredResWeb(res) {
       await this.handleCredRes(res, "credential");
     },
     async handleCredRes(res, credentialKey) {
+      console.log("🚀 ~ handleCredRes ~ handleCredRes:")
       const responsePayload = jwt_decode(res[credentialKey]);
-
+      console.table("responsePayload", responsePayload)
       const signupBody = {
         name: responsePayload.name,
         email: responsePayload.email,
@@ -105,9 +114,17 @@ export default {
       }
     },
   },
-  mounted() {
+  async mounted() {
     if (this.isMobile) {
-      GoogleAuth.initialize();
+      //GoogleAuth.initialize();
+
+      await SocialLogin.initialize({
+        google: {
+          webClientId: '293155402509-b0pk4d2iqb3538d26j7j7evgfd37aojd.apps.googleusercontent.com', // Use Web Client ID for all platforms
+
+         // mode: 'offline' // replaces grantOfflineAccess
+        }
+      });
     } else {
       google.accounts.id.initialize({
         client_id:

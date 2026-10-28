@@ -110,23 +110,28 @@ export default {
 <style scoped>
 
 .bookmark-dialog {
-  position: fixed !important;
+  position: fixed;
   background-color: var(--color-background-soft);
 
   bottom: 0;
   left: 0;
-  height: 50%;
-  max-height: 50%;
+  /* allow dialog to shrink with content but never exceed half the viewport */
+  height: auto;
+  max-height: 50vh;
   width: 100%;
   border-radius: 15px;
   box-shadow: 1px 5px 18px #283618;
-
-  min-height: min-content;
-  overflow: auto;
+  /* ensure the dialog itself doesn't grow beyond the viewport */
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  /* overflow is handled by inner container */
   z-index: 2;
   font-size: 1.5rem;
+  padding: 8px 0; /* slight vertical padding so content doesn't touch edges */
 
 } 
+
 
 /* .bookmark-dialog {
   position: relative;
@@ -175,10 +180,53 @@ export default {
 }
 
 .bookmark-dialog__bookmark-item {
+  /* make the list take remaining space in the resizable-content and scroll internally */
+  flex: 1 1 auto;
+  overflow: auto;
   display: flex;
-
   padding: var(--PADDING);
   flex-direction: column;
   margin: 10px;
+}
+
+/* visible scrollbar styles for better UX (WebKit + Firefox) */
+.bookmark-dialog__bookmark-item::-webkit-scrollbar {
+  width: 10px;
+}
+.bookmark-dialog__bookmark-item::-webkit-scrollbar-track {
+  background: transparent;
+}
+.bookmark-dialog__bookmark-item::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.bookmark-dialog__bookmark-item {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.2) transparent;
+}
+
+.resizable-content {
+  /* ensure inner content doesn't force the fixed dialog to grow
+     Use flex layout so header stays sized and the list can scroll */
+  display: flex;
+  flex-direction: column;
+  /* allow content to grow but remain constrained by dialog's max-height */
+  height: 100%;
+  min-height: 0; /* allow children to overflow/scroll properly */
+}
+
+/* make the section a flex child so its contents can be constrained and scroll */
+.resizable-content > section {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* safety: ensure the list doesn't expand beyond the dialog; header height subtracted using calc as a fallback */
+.bookmark-dialog__bookmark-item {
+  max-height: calc(50vh - 56px);
 }
 </style>
